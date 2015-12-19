@@ -25,3 +25,15 @@ build/Release
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
+
+src*/**/*.js
+views/**/*.js
+express.js
+electron.js
+**/*.js.map
+
+**/*.secret
+**/*.secret.*
+
+names_part_100000.json
+names_part_100000.json.gz

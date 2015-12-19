@@ -1,0 +1,15 @@
+extends ./layout/_layout
+block title
+  title!= title
+block body
+  case mode
+    when "development"
+      script.
+        System.import('app/app.spec')
+          .then(window.onload)
+          .catch(System.import('app/boot'));
+    default
+      script.
+        System.import('app/boot');       
+  .container
+    my-app loading...

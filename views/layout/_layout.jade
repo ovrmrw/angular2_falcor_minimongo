@@ -1,0 +1,35 @@
+- var node = "../node_modules";
+
+html
+  head
+    block title
+    // Import Google Icon Font
+    link(href='http://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
+    // Import materialize.css
+    link(rel='stylesheet', href='#{node}/materialize-css/dist/css/materialize.css', media='screen,projection')
+    // Let browser know website is optimized for mobile
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    
+    case mode
+      when "development"
+        link(rel='stylesheet', href='#{node}/jasmine-core/lib/jasmine-core/jasmine.css')
+        script(src='#{node}/jasmine-core/lib/jasmine-core/jasmine.js')
+        script(src='#{node}/jasmine-core/lib/jasmine-core/jasmine-html.js')
+        script(src='#{node}/jasmine-core/lib/jasmine-core/boot.js')
+      
+    link(rel='stylesheet', href='style.css')
+    //script(src='../node_modules/babel/dist/browser.min.js')
+    script(src='#{node}/systemjs/dist/system.js')    
+    script(src='#{node}/angular2/bundles/angular2-polyfills.min.js')    
+    script(src='#{node}/angular2/bundles/angular2.dev.js')
+    script(src='#{node}/angular2/bundles/router.dev.js')
+    script(src='#{node}/angular2/bundles/http.dev.js')
+    script(src='#{node}/rxjs/bundles/Rx.js')
+    //script(src='#{node}/falcor/dist/falcor.browser.js')
+    script(src='system.config.js')
+  body
+    block body
+
+    script(src='#{node}/jquery/dist/jquery.min.js' onload='try{ window.jQuery = window.$ = module.exports; }catch(e){ }')
+    script(src='#{node}/hammerjs/hammer.min.js' onload='try{ window.Hammer = module.exports; }catch(e){ }')
+    script(src='#{node}/materialize-css/dist/js/materialize.min.js')

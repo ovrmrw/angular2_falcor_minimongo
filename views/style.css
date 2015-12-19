@@ -1,0 +1,7 @@
+.container {
+  font-family: "Roboto", "Yu Gothic UI", "Meiryo UI", Meiryo, "MS Pgothic", Osaka, "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+td, th {
+  padding: 12px 5px;
+}
