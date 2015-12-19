@@ -33,7 +33,7 @@ const componentSelector = 'my-page1'
             <p>Falcorを理解するにはクライアントサイド(ブラウザ)のコンソールとサーバーサイドのコンソールをよく観察してください。Page3～4では特に重要なことです。</p>
             <p>/src-server/minimongo-falcor-router.ts でFalcorがサーバーサイドで "どういうクエリに対してどういう結果を返すか" を定義しています。
             このルート定義は最初のうちは難解かもしれませんが一度わかると面白いように使いこなせるようになります。</p>
-            <p>表示されているメッセージはどこに記述されているかわかりますか？ 探してみてください。少なくとも app-page1.component.ts の中ではありません。</p>
+            <p>表示されているメッセージ(can you find ～)はどこに記述されているかわかりますか？ 探してみてください。少なくとも app-page1.component.ts の中ではありません。</p>
             <h5>{{nowByObservable | date:'yyyy-MM-dd HH:mm:ss'}}</h5>
           </div>
           <div class="modal-footer">
