@@ -34,6 +34,7 @@ const componentSelector = 'my-page1'
             <p>/src-server/minimongo-falcor-router.ts でFalcorがサーバーサイドで "どういうクエリに対してどういう結果を返すか" を定義しています。
             このルート定義は最初のうちは難解かもしれませんが一度わかると面白いように使いこなせるようになります。</p>
             <p>表示されているメッセージ(can you find ～)はどこに記述されているかわかりますか？ 探してみてください。少なくとも app-page1.component.ts の中ではありません。</p>
+            <p>色々なところをクリックすると一瞬トーストが表示されますね。どこにこの制御が記述されているかわかりますか？トーストの表示時間をもう少し長くすることはできますか？</p>
             <h5>{{nowByObservable | date:'yyyy-MM-dd HH:mm:ss'}}</h5>
           </div>
           <div class="modal-footer">
