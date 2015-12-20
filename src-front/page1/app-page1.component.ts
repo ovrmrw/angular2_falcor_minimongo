@@ -2,6 +2,7 @@ import {Component} from 'angular2/core'
 import {OnDeactivate} from 'angular2/router'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
+import {AppModal} from '../app/app-modal.component'
 import _ from 'lodash'
 const falcor = require('falcor');
 declare var $: JQueryStatic; // HTMLファイルでロード済み
@@ -21,29 +22,9 @@ const componentSelector = 'my-page1'
         <h3>{{messageByFalcor}}</h3>
       </div>
     </div>
-    <div class="row">
-      <div class="col s12">
-        <!-- Modal Trigger -->
-        <a class="waves-effect waves-light btn modal-trigger" href="#modal1">explanation</a>
-        <!-- Modal Structure -->
-        <div id="modal1" class="modal">
-          <div class="modal-content">
-            <h4>説明</h4>
-            <p>Page1ではFalcorのクエリを発行して固定メッセージを受け取るだけです。インタラクティブ性は全くありません。</p>
-            <p>Falcorを理解するにはクライアントサイド(ブラウザ)のコンソールとサーバーサイドのコンソールをよく観察してください。Page3～4では特に重要なことです。</p>
-            <p>/src-server/minimongo-falcor-router.ts でFalcorがサーバーサイドで "どういうクエリに対してどういう結果を返すか" を定義しています。
-            このルート定義は最初のうちは難解かもしれませんが一度わかると面白いように使いこなせるようになります。</p>
-            <p>表示されているメッセージ(can you find ～)はどこに記述されているかわかりますか？ 探してみてください。少なくとも app-page1.component.ts の中ではありません。</p>
-            <p>色々なところをクリックすると一瞬トーストが表示されますね。どこにこの制御が記述されているかわかりますか？トーストの表示時間をもう少し長くすることはできますか？</p>
-            <h5>{{nowByObservable | date:'yyyy-MM-dd HH:mm:ss'}}</h5>
-          </div>
-          <div class="modal-footer">
-            <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
+  `,
+  directives: [AppModal]
 })
 export class AppPage1 extends AppPageParent implements OnDeactivate {
 
@@ -91,4 +72,13 @@ export class AppPage1 extends AppPageParent implements OnDeactivate {
   loadJsonGraph() {
     this.getJsonGraph();
   }
+  
+  // ここからモーダルウインドウのテキスト
+  modalTexts = [
+    'Page1ではFalcorのクエリを発行して固定メッセージを受け取るだけです。インタラクティブ性は全くありません。',
+    'Falcorを理解するにはクライアントサイド(ブラウザ)のコンソールとサーバーサイドのコンソールをよく観察してください。Page3～4では特に重要なことです。',
+    '/src-server/minimongo-falcor-router.ts でFalcorがサーバーサイドで "どういうクエリに対してどういう結果を返すか" を定義しています。このルート定義は最初のうちは難解かもしれませんが一度わかると面白いように使いこなせるようになります。',
+    '表示されているメッセージ(can you find ～)はどこに記述されているかわかりますか？ 探してみてください。少なくとも app-page1.component.ts の中ではありません。',
+    '色々なところをクリックすると一瞬トーストが表示されますね。どこにこの制御が記述されているかわかりますか？トーストの表示時間をもう少し長くすることはできますか？',
+  ];
 }

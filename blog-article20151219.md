@@ -1,4 +1,4 @@
-title: 若鳥のFalcorとAngular2のリゾット、季節のRxJSジュレとminimongoを添えて(TypeScriptのAbstract Class風味)
+title: 新鮮なFalcorとAngular2のサンプル、季節のRxJSとminimongoを添えて(TypeScriptのAbstract Class風味)
 
 ## Angular2, Falcor, RxJS, minimongo, TypeScript, Abstract Classデザインパターン
 
@@ -86,6 +86,7 @@ let routes = [];
 routes.push({
   route: "hoge.foo.bar[{keys:keyword}]",
   get: (pathSet: any): any[] => {
+    const keyword = pathSet.keyword[0] as string;
     let results = [];
     results.push({
       path: pathSet, 
@@ -96,7 +97,7 @@ routes.push({
 });
 ```
 よくわからないかもしれませんが、これは簡単過ぎて実用的ではない例です。  
-(公式サイトを一通り眺めてみると上記がどういう意味なのかわかります)  
+(公式サイトを一通り眺めてみると上記がどういう意味なのかわかります。特に[The Falcor Router](https://netflix.github.io/falcor/documentation/router.html#the-falcor-router)は読んだ方がいいかもしれません)  
 今回のサンプルでは上記のような`routes.push()`が4回出てきます。つまりここでエンドポイントを4つ定義しています。  
 サンプルアプリにはPage1～4まであり、各々のページ用に1つずつエンドポイントを用意してあります。
 最初は簡単でだんだん難しくなるように書きましたので、自分がどこまで理解できるか挑戦してみてください。
@@ -126,7 +127,7 @@ getJsonGraph() {
 * フロントエンドのTypeScriptファイルは ./src-front フォルダに
 
 分けて保存してあります。  
-上記はフロントエンドの中でもPage1のコードの抜粋です。Page4のこの部分はかなり難しくなっていますよ。抜粋してみましょう。
+上記のコードはフロントエンドの中でもPage1のコードの抜粋です。Page4のこの部分はかなり難しくなっていますよ。抜粋してみましょう。
 ```javascript
 // ./src-front/page4/app-page4.component.ts
 
@@ -140,7 +141,9 @@ getJsonGraph(condition: string, keyword: string, from: number = 0, length: numbe
     });
 }
 ```
-はい、これはもう、実際の動きを見てもらいながらソースを追っていただくしかないかなと思います。  
+`this.model.get()`の中が難解ですが、これは**こういう構造のJSONを要求する**という意味になります。  
+
+何を言っているかわからないかもしれませんね。これはもう、実際の動きを見てもらいながらソースを追っていただくしかないかなと思います。  
 なるべくヒントになるような情報をコンソールに出力するようにコードを書いたつもりですので、動かしながらコンソールをよく観察してみてください。
 
 ### 起動から画面表示までの大まかな流れ
@@ -155,6 +158,7 @@ Angular2に不慣れな方は、そもそも起動して画面が表示される
 
 上記が**Expressを起動してからPage1を表示するまで**の大体のファイル読み込みの流れです。  
 よくわからなくなったときはこの流れに沿ってソースを読んでみてください。
+
 
 ### サンプルアプリの遊び方
 GitHubのリポジトリを`clone`して、`npm install`して、`gulp compile`して、`gulp ex`でブラウザが自動的に立ち上がります。

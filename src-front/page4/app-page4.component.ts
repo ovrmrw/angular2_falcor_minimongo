@@ -3,6 +3,7 @@ import {OnDeactivate} from 'angular2/router'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
 import {AppPage4Table} from './app-page4-table.component'
+import {AppModal} from '../app/app-modal.component'
 import _ from 'lodash'
 const falcor = require('falcor');
 declare var $: JQueryStatic; // HTMLファイルでロード済み
@@ -27,42 +28,13 @@ const componentSelector = 'my-page4';
         <label for="searchWord">Search Word</label>
       </div>
     </div>
-    <div class="row">
-      <div class="col s12">
-        <my-complicated-table [fields]="fields" [aliases]="aliases" [aligns]="aligns" [documents]="documentsByFalcor"
-          [totalItems]="totalItemsByFalcor" [itemsPerPage]="itemsPerPage" [currentPage]="currentPageByObservable"></my-complicated-table>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s12">
-        <!-- Modal Trigger -->
-        <a class="waves-effect waves-light btn modal-trigger" href="#modal1">explanation</a>
-        <!-- Modal Structure -->
-        <div id="modal1" class="modal">
-          <div class="modal-content">
-            <h4>説明</h4>
-            <p>Search Word欄に文字を入力するとFalcorの検索クエリが発行されます。正規表現で入力できます。</p>
-            <p>Condition Path欄に入力されたパスが検索対象となります。</p>
-            <p>例えばCondition Pathを "name.last" にしてみてください。 "name.first" のときとは結果が違いますね？</p>
-            <p>例えば ニューヨーク州 に住んでいる人だけを検索したい場合、どうすればいいかわかりますか？</p>
-            <p>(ブラウザのコンソールとサーバーサイドのコンソールをよく観察すればきっと答えがわかります)</p>
-            <p>例えば 1月生まれ の人だけを検索したい場合、どうすればいいかわかりますか？</p>
-            <p>例えば 男性 だけを検索したい場合、どうすればいいかわかりますか？</p>
-            <p>(正規表現で入力できるということを思い出してください)</p>
-            <p>ブラウザの表示は更新されているのにサーバーサイドのコンソールは更新されないときがありますね。どういうときですか？</p>  
-            <p>テーブルとページネーションのコンポーネント定義は app-page4-table.component.ts に書いてあります。</p>    
-            <p>my-complicated-tableタグのコードは理解が難しいかもしれませんが、一度わかると実に合理的な処理をしていることが読み取れると思います。</p>
-            <p>例えば テーブルに"趣味の列"を追加したいとき、ソースコードのどこを変更すれば良いかわかりますか？</p>
-            <h5>{{nowByObservable | date:'yyyy-MM-dd HH:mm:ss'}}</h5>
-          </div>
-          <div class="modal-footer">
-            <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
-          </div>
-        </div>
-      </div>
-    </div>
+    
+    <my-complicated-table [fields]="fields" [aliases]="aliases" [aligns]="aligns" [documents]="documentsByFalcor"
+      [totalItems]="totalItemsByFalcor" [itemsPerPage]="itemsPerPage" [currentPage]="currentPageByObservable"></my-complicated-table>
+      
+    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
   `,
-  directives: [AppPage4Table]
+  directives: [AppPage4Table, AppModal]
 })
 export class AppPage4 extends AppPageParent implements OnDeactivate {
   // 以下2つのstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
@@ -147,4 +119,20 @@ export class AppPage4 extends AppPageParent implements OnDeactivate {
   loadJsonGraph() {
     this.getJsonGraph(this.condition, this.searchWord, (this.currentPageByObservable - 1) * this.itemsPerPage, this.itemsPerPage);
   }
+  
+  // ここからモーダルウインドウのテキスト。
+  modalTexts = [
+    'Search Word欄に文字を入力するとFalcorの検索クエリが発行されます。正規表現で入力できます。',
+    'Condition Path欄に入力されたパスが検索対象となります。',
+    '例えばCondition Pathを "name.last" にしてみてください。 "name.first" のときとは結果が違いますね？',
+    '例えば ニューヨーク州 に住んでいる人だけを検索したい場合、どうすればいいかわかりますか？',
+    '(ブラウザのコンソールとサーバーサイドのコンソールをよく観察すればきっと答えがわかります)',
+    '例えば 1月生まれ の人だけを検索したい場合、どうすればいいかわかりますか？',
+    '例えば 男性 だけを検索したい場合、どうすればいいかわかりますか？',
+    '(正規表現で入力できるということを思い出してください)',
+    'ブラウザの表示は更新されているのにサーバーサイドのコンソールは更新されないときがありますね。どういうときですか？',
+    'テーブルとページネーションのコンポーネント定義は app-page4-table.component.ts に書いてあります。',
+    'my-complicated-tableタグのコードは理解が難しいかもしれませんが、一度わかると実に合理的な処理をしていることが読み取れると思います。',
+    '例えば テーブルに"趣味の列"を追加したいとき、ソースコードのどこを変更すれば良いかわかりますか？'
+  ];
 }

@@ -5,26 +5,30 @@ const componentSelector = 'my-complicated-table'
 @Component({
   selector: componentSelector,
   template: `
-    <ul *ngIf="totalItems > 0" class="pagination" (click)="onClickPagination($event)">
-      <li [ngClass]="{'waves-effect':currentPage!=1,'disabled':currentPage==1}" [attr.target-page]="currentPage > 1 ? currentPage - 1 : 1" class="target-page"><i class="material-icons">chevron_left</i></li>
-      <li *ngFor="#page of pagesRange" [ngClass]="{'waves-effect':page!=currentPage,'active':page==currentPage}" [attr.target-page]="page" class="target-page">{{page}}</li>
-      <li [ngClass]="{'waves-effect':currentPage!=totalPages,'disabled':currentPage==totalPages}" [attr.target-page]="currentPage != totalPages ? currentPage + 1 : currentPage" class="target-page"><i class="material-icons">chevron_right</i></li>
-      <li>Total Items:{{totalItems}}</li>
-    </ul>
-    <table class="bordered">
-      <thead>
-        <tr>
-          <th *ngFor="#field of fields, #i = index" class="center-align">{{aliases[i] || field | uppercase}}</th>
-        </tr>
-      </thead>
-      <tbody *ngIf="totalItems > 0">
-        <tr *ngFor="#document of documents">
-          <td *ngFor="#i of columnsRange" [ngClass]="{'center-align':aligns[i]=='center', 'right-align':aligns[i]=='right'}">
-            {{ document[fields[i]] }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="row">
+      <div class="col s12">
+        <ul *ngIf="totalItems > 0" class="pagination" (click)="onClickPagination($event)">
+          <li [ngClass]="{'waves-effect':currentPage!=1,'disabled':currentPage==1}" [attr.target-page]="currentPage > 1 ? currentPage - 1 : 1" class="target-page"><i class="material-icons">chevron_left</i></li>
+          <li *ngFor="#page of pagesRange" [ngClass]="{'waves-effect':page!=currentPage,'active':page==currentPage}" [attr.target-page]="page" class="target-page">{{page}}</li>
+          <li [ngClass]="{'waves-effect':currentPage!=totalPages,'disabled':currentPage==totalPages}" [attr.target-page]="currentPage != totalPages ? currentPage + 1 : currentPage" class="target-page"><i class="material-icons">chevron_right</i></li>
+          <li>Total Items:{{totalItems}}</li>
+        </ul>
+        <table class="bordered">
+          <thead>
+            <tr>
+              <th *ngFor="#field of fields, #i = index" class="center-align">{{aliases[i] || field | uppercase}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="totalItems > 0">
+            <tr *ngFor="#document of documents">
+              <td *ngFor="#i of columnsRange" [ngClass]="{'center-align':aligns[i]=='center', 'right-align':aligns[i]=='right'}">
+                {{ document[fields[i]] }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   `,
   //inputs: ['fields', 'aliases', 'aligns', 'documents', 'totalItems', 'itemsPerPage', 'currentPage'] // これを書くと@Input()を省略できる。
 })

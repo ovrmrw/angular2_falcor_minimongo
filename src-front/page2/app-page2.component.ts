@@ -2,6 +2,7 @@ import {Component} from 'angular2/core'
 import {OnDeactivate} from 'angular2/router'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
+import {AppModal} from '../app/app-modal.component'
 import _ from 'lodash'
 const falcor = require('falcor');
 declare var $: JQueryStatic; // HTMLファイルでロード済み
@@ -27,30 +28,9 @@ const componentSelector = 'my-page2'
         <h3>{{messageByFalcor}}</h3>
       </div>
     </div>
-    <div class="row">
-      <div class="col s12">
-        <!-- Modal Trigger -->
-        <a class="waves-effect waves-light btn modal-trigger" href="#modal1">explanation</a>
-        <!-- Modal Structure -->
-        <div id="modal1" class="modal">
-          <div class="modal-content">
-            <h4>説明</h4>
-            <p>Page2ではKeyword欄に文字を入力するとFalcorのクエリが発行されて画面のメッセージが更新されます。いわゆるFalcor版Hello Worldですね。</p>
-            <p>Keywordが空欄になるとFalcorは"Pathの解決"(JSON Graphの生成)ができなくなり正常動作しません。</p>
-            <p>Keywordを数字だけにしても正常動作しません。それがなぜだかなんとなくでもわかりますか？ </p>
-            <p>FalcorではJSON Graphという概念がとても重要です。それが全てと言ってもいいぐらいです。よくわからないうちは、「JSONの構造を要求したらその構造が返ってくる」ぐらいに考えておけばいいかもしれません。</p>
-            <p>Helloだけでは味気ないですね。もう少し言葉を追加してみましょう。ソースコードのどこを変更すれば良いかわかりますか？</p>
-            <p>Keywordを色々変えながらクライアントサイド(ブラウザ)のコンソールとサーバーサイドのコンソールをよく観察してみてください。</p>
-            <p>このモーダル画面に時刻が表示されていますね。どうやってこの表示を更新しているかわかりますか？時刻の更新を1秒毎ではなく1分毎に変えることはできますか？</p>
-            <h5>{{nowByObservable | date:'yyyy-MM-dd HH:mm:ss'}}</h5>
-          </div>
-          <div class="modal-footer">
-            <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
+  `,
+  directives: [AppModal]
 })
 export class AppPage2 extends AppPageParent implements OnDeactivate {
   // 以下のstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
@@ -110,4 +90,15 @@ export class AppPage2 extends AppPageParent implements OnDeactivate {
   loadJsonGraph() {
     this.getJsonGraph(this.keyword);
   }
+  
+  // ここからモーダルウインドウのテキスト。
+  modalTexts = [
+    'Page2ではKeyword欄に文字を入力するとFalcorのクエリが発行されて画面のメッセージが更新されます。いわゆるFalcor版Hello Worldですね。',
+    'Keywordが空欄になるとFalcorは"Pathの解決"(JSON Graphの生成)ができなくなり正常動作しません。',
+    'Keywordを数字だけにしても正常動作しません。それがなぜだかなんとなくでもわかりますか？ ',
+    'FalcorではJSON Graphという概念がとても重要です。それが全てと言ってもいいぐらいです。よくわからないうちは、「JSONの構造を要求したらその構造が返ってくる」ぐらいに考えておけばいいかもしれません。',
+    'Helloだけでは味気ないですね。もう少し言葉を追加してみましょう。ソースコードのどこを変更すれば良いかわかりますか？',
+    'Keywordを色々変えながらクライアントサイド(ブラウザ)のコンソールとサーバーサイドのコンソールをよく観察してみてください。',
+    'このモーダル画面に時刻が表示されていますね。どうやってこの表示を更新しているかわかりますか？時刻の更新を1秒毎ではなく1分毎に変えることはできますか？'
+  ];
 }

@@ -2,6 +2,7 @@ import {Component} from 'angular2/core'
 import {OnDeactivate} from 'angular2/router'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
+import {AppModal} from '../app/app-modal.component'
 import _ from 'lodash'
 const falcor = require('falcor');
 declare var $: JQueryStatic; // HTMLファイルでロード済み
@@ -44,30 +45,9 @@ const componentSelector = 'my-page3';
         </table>
       </div>
     </div>
-    <div class="row">
-      <div class="col s12">
-        <!-- Modal Trigger -->
-        <a class="waves-effect waves-light btn modal-trigger" href="#modal1">explanation</a>
-        <!-- Modal Structure -->
-        <div id="modal1" class="modal">
-          <div class="modal-content">
-            <h4>説明</h4>
-            <p>Search Word欄に文字を入力するとFalcorの検索クエリが発行され、"name.first"プロパティで絞り込みをします。正規表現で入力できます。</p>
-            <p>例えば ber と ^ber では検索結果が違いますね？</p>
-            <p>検索対象がたくさんあったとしても10件までしか取得しません。ページネーションはPage4で実装します。</p>
-            <p>コンソールをよく観察してください。まるで "そういう構造のJSON" がそこにあって、それをただ引っ張ってきているかのようではないですか？</p>
-            <p>"name.first"プロパティではなく他のプロパティ、例えば"gender"で絞り込みをするにはソースコードのどこを変更すれば良いかわかりますか？</p>
-            <p>実際にはFalcorがクエリを受け取ってからルート定義の中で "そういう構造のJSON" を構築して返却しているのです。</p>
-            <p>このテンプレートのテーブル定義(app-page3.component.ts)を見てください。少し変更するだけでもかなりの作業が必要になりますね。Page4ではこの問題の解決に取り組んでいます。</p>      
-            <h5>{{nowByObservable | date:'yyyy-MM-dd HH:mm:ss'}}</h5>
-          </div>
-          <div class="modal-footer">
-            <a class=" modal-action modal-close waves-effect waves-green btn-flat">OK</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
+  `,
+  directives: [AppModal]
 })
 export class AppPage3 extends AppPageParent implements OnDeactivate {
   // 以下のstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
@@ -131,4 +111,15 @@ export class AppPage3 extends AppPageParent implements OnDeactivate {
   loadJsonGraph() {
     this.getJsonGraph(this.searchWord, this.itemsPerPage);
   }
+  
+  // ここからモーダルウインドウのテキスト。
+  modalTexts = [
+    'Search Word欄に文字を入力するとFalcorの検索クエリが発行され、"name.first"プロパティで絞り込みをします。正規表現で入力できます。',
+    '例えば ber と ^ber では検索結果が違いますね？',
+    '検索対象がたくさんあったとしても10件までしか取得しません。ページネーションはPage4で実装します。',
+    'コンソールをよく観察してください。まるで "そういう構造のJSON" がそこにあって、それをただ引っ張ってきているだけのようではないですか？',
+    '実際にはFalcorがクエリを受け取ってからルート定義の中で "そういう構造のJSON" を構築して返却しているのです。',
+    '"name.first"プロパティではなく他のプロパティ、例えば"gender"で絞り込みをするにはソースコードのどこを変更すれば良いかわかりますか？',
+    'このテンプレートのテーブル定義(app-page3.component.ts)を見てください。少し変更するだけでもかなりの作業が必要になりますね。どう改善すれば良いかわかりますか？ Page4ではこの問題の解決に取り組んでいます。',
+  ];
 }
