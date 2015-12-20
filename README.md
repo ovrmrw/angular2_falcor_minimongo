@@ -1,6 +1,6 @@
 # Angular2 + Falcor + RxJS + minimongo
 
-Angular2 Advent Calendar 2015 13日目の記事 [若鳥のFalcorとAngular2のリゾット、季節のRxJSジュレとminimongoを添えて(TypeScriptのAbstract Class風味)](http://overmorrow.hatenablog.com/entry/2015/12/20/025803) のサンプルコードです。
+Angular2 Advent Calendar 2015 13日目の記事 [新鮮なFalcorとAngular2のサンプル、季節のRxJSとminimongoを添えて(TypeScriptのAbstract Class風味)](http://overmorrow.hatenablog.com/entry/2015/12/20/025803) のサンプルコードです。
 
 
 ### How to setup
