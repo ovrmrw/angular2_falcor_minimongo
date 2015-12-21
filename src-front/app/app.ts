@@ -5,8 +5,9 @@ import {AppPage2} from '../page2/app-page2.component'
 import {AppPage3} from '../page3/app-page3.component'
 import {AppPage4} from '../page4/app-page4.component'
 
+const COMPONENT_SELECTOR = 'my-app'
 @Component({
-  selector: 'my-app',
+  selector: COMPONENT_SELECTOR,
   template: `
     <nav>
       <div class="nav-wrapper">

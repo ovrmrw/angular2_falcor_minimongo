@@ -3,14 +3,14 @@ import {OnDeactivate} from 'angular2/router'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
 import {AppModal} from '../app/app-modal.component'
-import _ from 'lodash'
+import lodash from 'lodash'
 const falcor = require('falcor');
-declare var $: JQueryStatic; // HTMLファイルでロード済み
+declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
 
-const componentSelector = 'my-page1'
+const COMPONENT_SELECTOR = 'my-page1'
 @Component({
-  selector: componentSelector,
+  selector: COMPONENT_SELECTOR,
   template: `
     <div class="row">
       <div class="col s12">
@@ -33,7 +33,7 @@ export class AppPage1 extends AppPageParent implements OnDeactivate {
   
   // ページ遷移で入る度に呼び出される。
   constructor() {
-    super(componentSelector);
+    super(COMPONENT_SELECTOR);
     this.loadJsonGraph();
   }
   // ページ遷移で出る度に呼び出される。
@@ -43,19 +43,19 @@ export class AppPage1 extends AppPageParent implements OnDeactivate {
 
   // 以下2つのinitializable関数は親クラスから呼び出される初期化専用の関数。
   initializableJQueryPlugins(): void {
-    $(`${componentSelector} .modal-trigger`).leanModal();
+    jQuery(`${COMPONENT_SELECTOR} .modal-trigger`).leanModal();
   }
   initializableEventObservables(): void {
-    this.disposableSubscription = Observable.fromEvent<MouseEvent>(document.getElementsByTagName(componentSelector), 'click')
+    this.disposableSubscription = Observable.fromEvent<MouseEvent>(document.getElementsByTagName(COMPONENT_SELECTOR), 'click')
       .map(event => event.target.textContent)
-      .filter(text => _.trim(text).length > 0)
+      .filter(text => text.trim().length > 0)
       .subscribe(text => {
         Materialize.toast(`You clicked "${text}"`, 300);
       });
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        this.nowByObservable = _.now();
+        this.nowByObservable = lodash.now();
       });
   }
 

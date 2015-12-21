@@ -1,13 +1,13 @@
 import 'babel-polyfill';
-import _ from 'lodash';
+import lodash from 'lodash';
 import express from 'express';
 const falcorExpress = require('falcor-express');
 import {MinimongoFalcorRouter} from './src-server/minimongo-falcor-router';
 
 require('dotenv').load();
-const EXPRESS_ENV = _.trim(process.env.EXPRESS_ENV); // development or production
-const EXPRESS_HOST = _.trim(process.env.EXPRESS_HOST);
-const EXPRESS_PORT = _.trim(process.env.EXPRESS_PORT);
+const EXPRESS_ENV = String(process.env.EXPRESS_ENV).trim(); // development or production
+const EXPRESS_HOST = String(process.env.EXPRESS_HOST).trim();
+const EXPRESS_PORT = Number(process.env.EXPRESS_PORT);
 
 const app = express();
 app.set('views', __dirname + '/views');

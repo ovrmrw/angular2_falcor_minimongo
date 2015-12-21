@@ -1,7 +1,7 @@
 import {AfterViewInit, AfterContentInit, OnInit} from 'angular2/core';
 import {OnDeactivate} from 'angular2/router';
 import {Subscription} from 'rxjs/Subscription';
-import _ from 'lodash';
+import lodash from 'lodash';
 
 export abstract class AppPageParent implements AfterViewInit, AfterContentInit, OnDeactivate {
   private static _initializedJQueryPluginSelectors: string[] = [];
@@ -48,7 +48,7 @@ export abstract class AppPageParent implements AfterViewInit, AfterContentInit, 
 
   private initPluginsAndObservables(selector: string): void {
     console.log(`${selector} initPluginsAndObservables`);
-    if (_.indexOf(this.initializedJQueryPluginSelectors, selector) === -1) {
+    if (lodash.indexOf(this.initializedJQueryPluginSelectors, selector) === -1) {
       this.initializableJQueryPlugins();
       this.initializedJQueryPluginSelector = selector;
     }

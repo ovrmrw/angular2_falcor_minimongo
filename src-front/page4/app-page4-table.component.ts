@@ -1,9 +1,10 @@
 import {Component, Input, OnChanges} from 'angular2/core';
-import _ from 'lodash';
+import lodash from 'lodash';
 
-const componentSelector = 'my-complicated-table'
+const COMPONENT_SELECTOR = 'my-complicated-table';
+const TARGET_PAGE = 'target-page';
 @Component({
-  selector: componentSelector,
+  selector: COMPONENT_SELECTOR,
   template: `
     <div class="row">
       <div class="col s12">
@@ -33,36 +34,35 @@ const componentSelector = 'my-complicated-table'
   //inputs: ['fields', 'aliases', 'aligns', 'documents', 'totalItems', 'itemsPerPage', 'currentPage'] // これを書くと@Input()を省略できる。
 })
 export class AppPage4Table implements OnChanges {
-  @Input() fields: string[]; // inputsを書けば省略できる。
-  @Input() aliases: string[]; // inputsを書けば省略できる。
-  @Input() aligns: string[]; // inputsを書けば省略できる。
-  @Input() documents: any[]; // inputsを書けば省略できる。
-  @Input() totalItems: number; // inputsを書けば省略できる。
-  @Input() itemsPerPage: number; // inputsを書けば省略できる。
-  @Input() currentPage: number; // inputsを書けば省略できる。
+  @Input() fields: string[]; // inputsを書けば@Input()を省略できる。
+  @Input() aliases: string[]; // 〃
+  @Input() aligns: string[]; // 〃
+  @Input() documents: any[]; // 〃
+  @Input() totalItems: number; // 〃
+  @Input() itemsPerPage: number; // 〃
+  @Input() currentPage: number; // 〃
   columnsRange: number[];
   totalPages: number;
   pagesRange: number[];
-  TARGET_PAGE = 'target-page';
 
   ngOnChanges() {
-    this.columnsRange = _.range(0, this.fields.length);
+    this.columnsRange = lodash.range(0, this.fields.length);
     this.totalPages = Math.floor(this.totalItems / this.itemsPerPage) + 1
-    this.pagesRange = _.range(1, this.totalPages + 1);
+    this.pagesRange = lodash.range(1, this.totalPages + 1);
   }
 
   onClickPagination(event: MouseEvent) {
     //console.log(event);
     let element = event.target as HTMLElement;
     while (element) { // 条件に一致するHTMLElementを見つけるまでparentElementを辿る。
-      if (element.tagName == 'LI' && element.className.indexOf(this.TARGET_PAGE) > -1) {
+      if (element.tagName == 'LI' && element.className.indexOf(TARGET_PAGE) > -1) {
         break;
       }
       element = element.parentElement;
     }
     //console.log(element);
     if (element) {
-      const targetPage: number = parseInt(element.attributes.getNamedItem(this.TARGET_PAGE).value);      
+      const targetPage: number = parseInt(element.attributes.getNamedItem(TARGET_PAGE).value);      
       // CustomEventを生成する。
       const customEvent = new CustomEvent('emitTargetPage', { detail: targetPage, bubbles: true });
       // EventTarget型からcustomEventを発火。

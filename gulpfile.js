@@ -28,7 +28,7 @@ gulp.task('tsc', () => {
 
 gulp.task('compile', ['tsc']);
 
-gulp.task('watch', () => {
+gulp.task('watch', ['compile'], () => {
   gulp.watch(tscTargetGlobs, ['tsc']);
 });
 
@@ -41,12 +41,12 @@ function reload() {
 
 gulp.task('browsersync', function () {
   browserSync.init({
-    files: ['views/**/*', 'src*/**/*'], // BrowserSyncにまかせるファイル群
+    files: ['views/**/*', 'src*/**/*.js'], // BrowserSyncにまかせるファイル群
     proxy: 'http://localhost:3000',  // express の動作するポートにプロキシ
     port: 4000,  // BrowserSync は 4000 番ポートで起動
     open: true,  // ブラウザ open しない
-    //reloadDelay: 1000 * 2,
-    //reloadDebounce: 1000 * 2,
+    reloadDelay: 1000 * 1,
+    reloadDebounce: 1000 * 2,
     ghostMode: false
   });
 });
@@ -54,12 +54,11 @@ gulp.task('browsersync', function () {
 gulp.task('express', ['browsersync'], function () {
   nodemon({
     script: 'express.js',
-    // ext: 'js ts html css',
+    //ext: 'json',
     ignore: [  // nodemon で監視しないディレクトリ
       'node_modules',
       'typings',
       'src-front',
-      'src-server',
       'views'
     ],
     // env: {
@@ -81,7 +80,7 @@ gulp.task('express', ['browsersync'], function () {
   });
 });
 
-gulp.task('ex', ['compile', 'express', 'watch']);
+gulp.task('ex', ['compile', 'express']);
 
 /////////////////////////////////////////////////////////////////////////
 // ELECTRON
@@ -92,4 +91,4 @@ gulp.task('electron', () => {
   proc.spawn(electron, ['electron.js']);
 });
 
-gulp.task('el', ['compile', 'electron', 'watch']);
+gulp.task('el', ['compile', 'electron']);

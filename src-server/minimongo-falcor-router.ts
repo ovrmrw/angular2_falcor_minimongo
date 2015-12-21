@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import lodash from 'lodash';
 const flatten = require('flat');
 const Router = require('falcor-router');
 
@@ -13,7 +13,7 @@ let routes = []; // routeをどんどんpushしてRouter.createClass()の引数�
 routes.push({
   route: "hoge", // (1)
   get: (pathSet: any): any[] => {
-    console.log(`${_.repeat('=', 10)} hoge ${_.repeat('=', 10)}`);
+    console.log(`${lodash.repeat('=', 10)} hoge ${lodash.repeat('=', 10)}`);
     console.log(pathSet);
     // pathSet[0] === ['hoge']
     let results = [];
@@ -31,7 +31,7 @@ routes.push({
 routes.push({
   route: "hoge.foo.bar[{keys:keyword}]", // (1)
   get: (pathSet: any): any[] => {
-    console.log(`${_.repeat('=', 10)} hoge.foo.bar[{keys:keyword}] ${_.repeat('=', 10)}`);
+    console.log(`${lodash.repeat('=', 10)} hoge.foo.bar[{keys:keyword}] ${lodash.repeat('=', 10)}`);
     console.log(pathSet);
     // pathSet[0] === ['hoge']
     // pathSet[1] === ['foo']
@@ -52,7 +52,7 @@ routes.push({
 routes.push({
   route: "[{keys:collection}][{keys:keyword}][{integers:ranges}]['name.first','name.last','gender','birthday']",
   get: (pathSet: any): any[] => {
-    console.log(`${_.repeat('=', 10)} [{keys:collection}][{keys:keyword}][{integers:ranges}]['name.first','name.last','gender','birthday'] ${_.repeat('=', 10)}`);
+    console.log(`${lodash.repeat('=', 10)} [{keys:collection}][{keys:keyword}][{integers:ranges}]['name.first','name.last','gender','birthday'] ${lodash.repeat('=', 10)}`);
     console.log(pathSet);
     const collection = pathSet.collection[0] as string;
     const keyword = pathSet.keyword[0] as string;
@@ -87,7 +87,7 @@ routes.push({
 routes.push({ 
   route: "[{keys:collection}][{keys:condition}][{keys:keyword}][{integers:ranges}][{keys:fields}]",
   get: (pathSet: any): any[] => {
-    console.log(`${_.repeat('=', 10)} [{keys:collection}][{keys:condition}][{keys:keyword}][{integers:ranges}][{keys:fields}] ${_.repeat('=', 10)}`);
+    console.log(`${lodash.repeat('=', 10)} [{keys:collection}][{keys:condition}][{keys:keyword}][{integers:ranges}][{keys:fields}] ${lodash.repeat('=', 10)}`);
     console.log(pathSet);
     const collection = pathSet.collection[0] as string;
     const condition = pathSet.condition[0] as string;
@@ -108,8 +108,8 @@ routes.push({
               fields.forEach(field => {
                 let value: any;
                 if (field.indexOf(',') > -1) {
-                  const joinableArray = _.reduce(field.split(','), (result, fieldChild) => {
-                    result.push(flattenRes[_.trim(fieldChild)]);
+                  const joinableArray = lodash.reduce(field.split(','), (result, fieldChild) => {
+                    result.push(flattenRes[lodash.trim(fieldChild)]);
                     return result;
                   }, []);
                   value = joinableArray.join(', ');
@@ -126,7 +126,7 @@ routes.push({
         });
     }
     results.push({
-      path: [collection, condition, keyword, _.min(ranges), 'totalItems'], // totalCountプロパティに…
+      path: [collection, condition, keyword, lodash.min(ranges), 'totalItems'], // totalCountプロパティに…
       value: totalItems // 検索されたドキュメントがいくつあったか代入する。
     });
     console.log(JSON.stringify(results));

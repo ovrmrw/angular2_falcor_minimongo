@@ -1,11 +1,11 @@
 import 'babel-polyfill';
-import _ from 'lodash';
+import lodash from 'lodash';
 const fs = require('fs');
 const path = require('path');
 
 require('dotenv').load();
-const EXPRESS_ENV = _.trim(process.env.EXPRESS_ENV);
-const ELECTRON_ENV = _.trim(process.env.ELECTRON_ENV);
+const EXPRESS_ENV = String(process.env.EXPRESS_ENV).trim();
+const ELECTRON_ENV = String(process.env.ELECTRON_ENV).trim();
 const JADE = "jade";
 
 console.log('Electron is running as "%s" mode.', ELECTRON_ENV);

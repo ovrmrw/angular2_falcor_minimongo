@@ -4,14 +4,14 @@ import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
 import {AppPage4Table} from './app-page4-table.component'
 import {AppModal} from '../app/app-modal.component'
-import _ from 'lodash'
+import lodash from 'lodash'
 const falcor = require('falcor');
-declare var $: JQueryStatic; // HTMLファイルでロード済み
+declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
 
-const componentSelector = 'my-page4';
+const COMPONENT_SELECTOR = 'my-page4';
 @Component({
-  selector: componentSelector,
+  selector: COMPONENT_SELECTOR,
   template: `
     <div class="row">
       <div class="col s12">
@@ -49,7 +49,7 @@ export class AppPage4 extends AppPageParent implements OnDeactivate {
   
   // ページ遷移で入る度に呼び出される。
   constructor() {
-    super(componentSelector);
+    super(COMPONENT_SELECTOR);
     this.loadJsonGraph();
     document.getElementById('condition').focus();
   }
@@ -60,7 +60,7 @@ export class AppPage4 extends AppPageParent implements OnDeactivate {
 
   // 以下2つのinitializable関数は親クラスから呼び出される初期化専用の関数。
   initializableJQueryPlugins(): void {
-    $(`${componentSelector} .modal-trigger`).leanModal();
+    jQuery(`${COMPONENT_SELECTOR} .modal-trigger`).leanModal();
   }
   initializableEventObservables(): void {
     // 2つのinputエレメントの入力を束ねて(mergeして)listenしています。
@@ -75,22 +75,23 @@ export class AppPage4 extends AppPageParent implements OnDeactivate {
 
     // app-page4-table.component.ts で定義されたカスタムイベントの発火をこのObservableがlistenする。
     this.disposableSubscription = Observable.fromEvent<CustomEvent>(document.getElementsByTagName('my-complicated-table'), 'emitTargetPage')
+      .do(event => event.stopPropagation()) // CustomEventの伝播をここで止める。cancelableをtrueにしなくても止められる。
       .map(event => event.detail as number)
       .subscribe(targetPage => {
         this.currentPageByObservable = targetPage;
         this.loadJsonGraph();
       });
-
-    this.disposableSubscription = Observable.fromEvent<MouseEvent>(document.getElementsByTagName(componentSelector), 'click')
+      
+    this.disposableSubscription = Observable.fromEvent<MouseEvent>(document.getElementsByTagName(COMPONENT_SELECTOR), 'click')
       .map(event => event.target.textContent)
-      .filter(text => _.trim(text).length > 0)
+      .filter(text => text.trim().length > 0)
       .subscribe(text => {
         Materialize.toast(`You clicked "${text}"`, 300);
       });
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        this.nowByObservable = _.now();
+        this.nowByObservable = lodash.now();
       });
   }
 
@@ -111,7 +112,7 @@ export class AppPage4 extends AppPageParent implements OnDeactivate {
       .get([this.collection, condition, keyword, { from: from, length: length }, this.fields.concat('totalItems')])
       .then(jsonGraph => { // subscribe()だと動作がおかしくなる。
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.documentsByFalcor = jsonGraph ? _.toArray(jsonGraph.json[this.collection][condition][keyword]) : [];
+        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[this.collection][condition][keyword]) : [];
         this.totalItemsByFalcor = jsonGraph ? jsonGraph.json[this.collection][condition][keyword][from]['totalItems'] : 0;
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
       });
