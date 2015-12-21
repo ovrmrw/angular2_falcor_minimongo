@@ -1,9 +1,10 @@
 import lodash from 'lodash';
 const minimongo = require("minimongo");
 const fs = require('fs');
+const zlib = require('zlib');
 
 require('dotenv').load();
-const jsonFile = String(process.env.DB_IMPORT_JSON).trim();
+const gzippedJsonFile = String(process.env.DB_IMPORT_JSON).trim();
 const collection = String(process.env.DB_COLLECTION).trim();
 const splitter = '\n';
 
@@ -28,7 +29,8 @@ export class MinimongoFactory {
     this.db = new LocalDb();
     this.db.addCollection(collection);
 
-    let lines = fs.readFileSync(jsonFile, 'utf-8').toString().split(splitter) as string[];
+    const buffer = fs.readFileSync(gzippedJsonFile);
+    let lines = zlib.gunzipSync(buffer).toString('utf-8').split(splitter) as string[];
     lines = lines.filter(line => {
       return line.indexOf('{') > -1 && line.indexOf('}') > -1;
     });
