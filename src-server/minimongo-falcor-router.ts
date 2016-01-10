@@ -15,11 +15,11 @@ routes.push({
   get: (pathSet: any): any[] => {
     console.log(`${lodash.repeat('=', 10)} hoge ${lodash.repeat('=', 10)}`);
     console.log(pathSet);
-    // pathSet[0] === ['hoge']
+    // pathSet[0] === 'hoge'
     let results = [];
 
     results.push({
-      path: pathSet, // (2) [['hoge']]
+      path: pathSet, // (2) ['hoge']
       value: `Can you find in where this message be written?`
     });
     console.log(JSON.stringify(results));
@@ -29,18 +29,16 @@ routes.push({
 
 // Page2のクエリで使うルート定義
 routes.push({
-  route: "hoge.foo.bar[{keys:keyword}]", // (1)
+  route: "query2[{keys:keyword}]", // (1)
   get: (pathSet: any): any[] => {
-    console.log(`${lodash.repeat('=', 10)} hoge.foo.bar[{keys:keyword}] ${lodash.repeat('=', 10)}`);
+    console.log(`${lodash.repeat('=', 10)} query2[{keys:keyword}] ${lodash.repeat('=', 10)}`);
     console.log(pathSet);
-    // pathSet[0] === ['hoge']
-    // pathSet[1] === ['foo']
-    // pathSet[2] === ['bar']
+    // pathSet[0] === 'query2'
     const keyword = pathSet.keyword[0] as string;
     let results = [];
 
     results.push({
-      path: pathSet, // (2) [['hoge','foo','bar','Falcor']] (keywordがFaclorのとき)
+      path: pathSet, // (2) ['query2', ['Falcor']] (keywordがFaclorのとき)
       value: `Hello, ${keyword}.`
     });
     console.log(JSON.stringify(results));

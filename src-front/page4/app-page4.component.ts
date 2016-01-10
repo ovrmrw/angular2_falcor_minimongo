@@ -104,7 +104,7 @@ export class AppPage4 extends AppPageParent implements OnInit {
   
   // ここからFalcorのコード。
   collection = 'names';
-  model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
     this.model
       .get([this.collection, condition, keyword, { from: from, length: length }, this.fields.concat('totalItems')])

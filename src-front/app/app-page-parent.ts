@@ -1,7 +1,6 @@
 import {AfterViewInit, AfterContentInit, OnInit, OnDestroy} from 'angular2/core';
-import {OnDeactivate} from 'angular2/router';
 import {Subscription} from 'rxjs/Subscription';
-import lodash from 'lodash';
+const falcor = require('falcor');
 
 export abstract class AppPageParent implements AfterViewInit, AfterContentInit, OnInit, OnDestroy {
   // private static _initializedJQueryPluginSelectors: string[] = [];
@@ -58,4 +57,13 @@ export abstract class AppPageParent implements AfterViewInit, AfterContentInit, 
 
   protected abstract initializableJQueryPlugins(): void;
   protected abstract initializableEventObservables(): void;
+  
+  // ここからFalcorのコード。
+  private static _model = null;
+  protected get model() {
+    if(!AppPageParent._model){
+      AppPageParent._model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+    } 
+    return AppPageParent._model; 
+  }
 }

@@ -76,13 +76,14 @@ export class AppPage2 extends AppPageParent implements OnInit {
   }
 
   // ここからFalcorのコード。
-  model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(keyword: string) {
     this.model
-      .get(['hoge', 'foo', 'bar', keyword])
+      //.get(['hoge', 'foo', 'bar', keyword])
+      .get(['query2', keyword])
       .then(jsonGraph => { // subscribe()だと動作がおかしくなる。
         console.log(JSON.stringify(jsonGraph, null, 2));
-        this.messageByFalcor = jsonGraph ? jsonGraph.json.hoge.foo.bar[keyword] : '?????';
+        this.messageByFalcor = jsonGraph ? jsonGraph.json['query2'][keyword] : '?????';
       });
   }
   loadJsonGraph() {

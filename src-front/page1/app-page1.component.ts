@@ -58,7 +58,7 @@ export class AppPage1 extends AppPageParent implements OnInit {
   }
 
   // ここからFalcorのコード。
-  model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph() {
     this.model
       .get(['hoge'])
