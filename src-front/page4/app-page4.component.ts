@@ -1,5 +1,4 @@
-import {Component} from 'angular2/core'
-import {OnDeactivate} from 'angular2/router'
+import {Component, OnInit} from 'angular2/core'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
 import {AppPage4Table} from './app-page4-table.component'
@@ -36,7 +35,7 @@ const COMPONENT_SELECTOR = 'my-page4';
   `,
   directives: [AppPage4Table, AppModal]
 })
-export class AppPage4 extends AppPageParent implements OnDeactivate {
+export class AppPage4 extends AppPageParent implements OnInit {
   // 以下2つのstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
   static _condition: string = 'name.first';
   get condition() { return AppPage4._condition; }
@@ -49,13 +48,12 @@ export class AppPage4 extends AppPageParent implements OnDeactivate {
   
   // ページ遷移で入る度に呼び出される。
   constructor() {
-    super(COMPONENT_SELECTOR);
+    super(COMPONENT_SELECTOR);    
+  }
+  ngOnInit() {
+    super.ngOnInit();
     this.loadJsonGraph();
     document.getElementById('condition').focus();
-  }
-  // ページ遷移で出る度に呼び出される。
-  routerOnDeactivate() {
-    super.routerOnDeactivate();
   }
 
   // 以下2つのinitializable関数は親クラスから呼び出される初期化専用の関数。

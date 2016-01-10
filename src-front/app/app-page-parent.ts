@@ -1,16 +1,16 @@
-import {AfterViewInit, AfterContentInit, OnInit} from 'angular2/core';
+import {AfterViewInit, AfterContentInit, OnInit, OnDestroy} from 'angular2/core';
 import {OnDeactivate} from 'angular2/router';
 import {Subscription} from 'rxjs/Subscription';
 import lodash from 'lodash';
 
-export abstract class AppPageParent implements AfterViewInit, AfterContentInit, OnDeactivate {
-  private static _initializedJQueryPluginSelectors: string[] = [];
-  private get initializedJQueryPluginSelectors() {
-    return AppPageParent._initializedJQueryPluginSelectors;
-  }
-  private set initializedJQueryPluginSelector(selector: string) {
-    AppPageParent._initializedJQueryPluginSelectors.push(selector);
-  }
+export abstract class AppPageParent implements AfterViewInit, AfterContentInit, OnInit, OnDestroy {
+  // private static _initializedJQueryPluginSelectors: string[] = [];
+  // private get initializedJQueryPluginSelectors() {
+  //   return AppPageParent._initializedJQueryPluginSelectors;
+  // }
+  // private set initializedJQueryPluginSelector(selector: string) {
+  //   AppPageParent._initializedJQueryPluginSelectors.push(selector);
+  // }
 
   private _disposableSubscriptions: Subscription<any>[] = [];
   private get disposableSubscriptions() {
@@ -21,18 +21,18 @@ export abstract class AppPageParent implements AfterViewInit, AfterContentInit, 
   }
 
   constructor(private componentSelector: string) {
+    //this.initPluginsAndObservables(this.componentSelector);
+  }
+  ngOnInit() {
     this.initPluginsAndObservables(this.componentSelector);
   }
-  ngOnInit() { // ページ遷移で入ったときに勝手に呼ばれるので子クラスから呼び出す必要はない。
+  ngAfterContentInit() {
     //this.initPluginsAndObservables(this.componentSelector);
   }
-  ngAfterContentInit() { // ページ遷移で入ったときに勝手に呼ばれるので子クラスから呼び出す必要はない。
+  ngAfterViewInit() {
     //this.initPluginsAndObservables(this.componentSelector);
   }
-  ngAfterViewInit() { // ページ遷移で入ったときに勝手に呼ばれるので子クラスから呼び出す必要はない。
-    //this.initPluginsAndObservables(this.componentSelector);
-  }
-  routerOnDeactivate() {
+  ngOnDestroy() {
     this.disposeSubscriptions(this.componentSelector);
   }
 
@@ -48,10 +48,11 @@ export abstract class AppPageParent implements AfterViewInit, AfterContentInit, 
 
   private initPluginsAndObservables(selector: string): void {
     console.log(`${selector} initPluginsAndObservables`);
-    if (lodash.indexOf(this.initializedJQueryPluginSelectors, selector) === -1) {
-      this.initializableJQueryPlugins();
-      this.initializedJQueryPluginSelector = selector;
-    }
+    // if (lodash.indexOf(this.initializedJQueryPluginSelectors, selector) === -1) {
+    //   this.initializableJQueryPlugins();
+    //   this.initializedJQueryPluginSelector = selector;
+    // }
+    this.initializableJQueryPlugins();
     this.initializableEventObservables();
   }
 

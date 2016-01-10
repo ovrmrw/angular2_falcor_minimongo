@@ -1,5 +1,4 @@
-import {Component} from 'angular2/core'
-import {OnDeactivate} from 'angular2/router'
+import {Component, OnInit} from 'angular2/core'
 import {Observable} from 'rxjs/Observable'
 import {AppPageParent} from '../app/app-page-parent'
 import {AppModal} from '../app/app-modal.component'
@@ -49,7 +48,7 @@ const componentSelector = 'my-page3';
   `,
   directives: [AppModal]
 })
-export class AppPage3 extends AppPageParent implements OnDeactivate {
+export class AppPage3 extends AppPageParent implements OnInit {
   // 以下のstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
   static _searchWord: string = '';
   get searchWord() { return AppPage3._searchWord; }
@@ -59,13 +58,12 @@ export class AppPage3 extends AppPageParent implements OnDeactivate {
   
   // ページ遷移で入る度に呼び出される。
   constructor() {
-    super(componentSelector);
+    super(componentSelector);    
+  }
+  ngOnInit() {
+    super.ngOnInit();
     this.loadJsonGraph();
     document.getElementById('searchWord').focus();
-  }
-  // ページ遷移で出る度に呼び出される。
-  routerOnDeactivate() {
-    super.routerOnDeactivate();
   }
 
   // 以下2つのinitializable関数は親クラスから呼び出される初期化専用の関数。
