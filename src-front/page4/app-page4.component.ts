@@ -1,10 +1,11 @@
-import {Component, OnInit} from 'angular2/core'
-import {Observable} from 'rxjs/Observable'
-import {AppPageParent} from '../app/app-page-parent'
-import {AppPage4Table} from './app-page4-table.component'
-import {AppModal} from '../app/app-modal.component'
-import lodash from 'lodash'
+import {Component, OnInit} from 'angular2/core';
+import {Observable} from 'rxjs/Observable';
+import {AppPageParent} from '../app/app-page-parent';
+import {AppPage4Table} from './app-page4-table.component';
+import {AppModal} from '../app/app-modal.component';
+import lodash from 'lodash';
 const falcor = require('falcor');
+import {serializeQueryObjectForFalcor} from '../app/falcor-json-serializer';
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
 
@@ -103,15 +104,21 @@ export class AppPage4 extends AppPageParent implements OnInit {
   itemsPerPage: number = 10;  
   
   // ここからFalcorのコード。
-  collection = 'names';
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
-    this.model
-      .get([this.collection, condition, keyword, { from: from, length: length }, this.fields.concat('totalItems')])
-      .then(jsonGraph => { // subscribe()だと動作がおかしくなる。
+    const queryName = 'query4';
+    const queryJson = serializeQueryObjectForFalcor<QueryJsonForQuery4>({
+      collection: 'names',
+      condition: condition,
+      keyword: keyword     
+    });
+    
+    this.model // this.modelは親クラスで定義されている。
+      .get([queryName, queryJson, { from: from, length: length }, this.fields.concat('totalItems')])
+      .then(jsonGraph => {
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[this.collection][condition][keyword]) : [];
-        this.totalItemsByFalcor = jsonGraph ? jsonGraph.json[this.collection][condition][keyword][from]['totalItems'] : 0;
+        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[queryName][queryJson]) : [];
+        this.totalItemsByFalcor = jsonGraph ? jsonGraph.json[queryName][queryJson][from]['totalItems'] : 0;
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
       });
   }

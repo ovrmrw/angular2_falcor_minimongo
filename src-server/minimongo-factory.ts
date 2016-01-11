@@ -8,6 +8,8 @@ const gzippedJsonFile = String(process.env.DB_IMPORT_JSON).trim();
 const collection = String(process.env.DB_COLLECTION).trim();
 const splitter = '\n';
 
+const doubleLine = '='.repeat(10);
+
 export class MinimongoFactory {
   private static _db = null;
   private get db() {
@@ -39,7 +41,7 @@ export class MinimongoFactory {
     const obj = JSON.parse(json);
 
     this.db[collection].upsert(obj, () => {
-      console.log('========= minimongo database is now on ready. =========');
+      console.log(`${doubleLine} minimongo database is now on ready. ${doubleLine}`);
       console.log('documents count: ' + this.db[collection].find({}, {}).fetch(res => res.length));
     });
   }

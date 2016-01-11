@@ -78,12 +78,13 @@ export class AppPage2 extends AppPageParent implements OnInit {
   // ここからFalcorのコード。
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(keyword: string) {
-    this.model
-      //.get(['hoge', 'foo', 'bar', keyword])
-      .get(['query2', keyword])
-      .then(jsonGraph => { // subscribe()だと動作がおかしくなる。
-        console.log(JSON.stringify(jsonGraph, null, 2));
-        this.messageByFalcor = jsonGraph ? jsonGraph.json['query2'][keyword] : '?????';
+    const queryName = 'query2';
+    
+    this.model // this.modelは親クラスで定義されている。
+      .get([queryName, keyword])
+      .then(jsonGraph => {
+        console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
+        this.messageByFalcor = jsonGraph ? jsonGraph.json[queryName][keyword] : '?????';
       });
   }
   loadJsonGraph() {

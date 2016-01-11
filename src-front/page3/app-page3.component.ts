@@ -98,11 +98,13 @@ export class AppPage3 extends AppPageParent implements OnInit {
   collection = 'names';
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(keyword: string, itemsPerPage: number) {
-    this.model
-      .get([this.collection, keyword, { from: 0, length: itemsPerPage }, ['name.first', 'name.last', 'gender', 'birthday']])
-      .then(jsonGraph => { // subscribe()だと動作がおかしくなる。
+    const queryName = 'query3';
+    
+    this.model // this.modelは親クラスで定義されている。
+      .get([queryName, this.collection, keyword, { from: 0, length: itemsPerPage }, ['name.first', 'name.last', 'gender', 'birthday']])
+      .then(jsonGraph => {
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[this.collection][keyword]) : [];
+        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[queryName][this.collection][keyword]) : [];
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
       });
   }

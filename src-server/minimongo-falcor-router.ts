@@ -1,6 +1,7 @@
 import lodash from 'lodash';
 const flatten = require('flat');
 const Router = require('falcor-router');
+import {deserializeQueryJsonForFalcor} from '../src-front/app/falcor-json-serializer';
 
 import {MinimongoFactory} from './minimongo-factory';
 const db = new MinimongoFactory().getDatabase(); // getDatabase()のときにDBがシングルトンで生成される。
@@ -9,20 +10,22 @@ let routes = []; // routeをどんどんpushしてRouter.createClass()の引数�
 
 // Router.createClassと同じファイルにrouteの定義を書かないと動作しない？
 
+const doubleLine = '='.repeat(10);
+
 // Page1のクエリで使うルート定義
 routes.push({
-  route: "hoge", // (1)
+  route: "query1", // (1)
   get: (pathSet: any): any[] => {
-    console.log(`${lodash.repeat('=', 10)} hoge ${lodash.repeat('=', 10)}`);
+    console.log(`${doubleLine} query1 ${doubleLine}`);
     console.log(pathSet);
-    // pathSet[0] === 'hoge'
+    // pathSet[0] === 'query1'
     let results = [];
 
     results.push({
-      path: pathSet, // (2) ['hoge']
+      path: pathSet, // (2) ['query1']
       value: `Can you find in where this message be written?`
     });
-    console.log(JSON.stringify(results));
+    console.log('falcor route result: ' + JSON.stringify(results));
     return results; // (2)のpathが(1)のrouteと一致する構造であれば結果がreturnされる。
   }
 });
@@ -31,7 +34,7 @@ routes.push({
 routes.push({
   route: "query2[{keys:keyword}]", // (1)
   get: (pathSet: any): any[] => {
-    console.log(`${lodash.repeat('=', 10)} query2[{keys:keyword}] ${lodash.repeat('=', 10)}`);
+    console.log(`${doubleLine} query2[{keys:keyword}] ${doubleLine}`);
     console.log(pathSet);
     // pathSet[0] === 'query2'
     const keyword = pathSet.keyword[0] as string;
@@ -41,34 +44,35 @@ routes.push({
       path: pathSet, // (2) ['query2', ['Falcor']] (keywordがFaclorのとき)
       value: `Hello, ${keyword}.`
     });
-    console.log(JSON.stringify(results));
+    console.log('falcor route result: ' + JSON.stringify(results));
     return results; // (2)のpathが(1)のrouteと一致する構造であれば結果がreturnされる。
   }
 });
 
 // Page3のクエリで使うルート定義
 routes.push({
-  route: "[{keys:collection}][{keys:keyword}][{integers:ranges}]['name.first','name.last','gender','birthday']",
+  route: "query3[{keys:collection}][{keys:keyword}][{integers:range}]['name.first','name.last','gender','birthday']",
   get: (pathSet: any): any[] => {
-    console.log(`${lodash.repeat('=', 10)} [{keys:collection}][{keys:keyword}][{integers:ranges}]['name.first','name.last','gender','birthday'] ${lodash.repeat('=', 10)}`);
+    console.log(`${doubleLine} query3[{keys:collection}][{keys:keyword}][{integers:range}]['name.first','name.last','gender','birthday'] ${doubleLine}`);
     console.log(pathSet);
+    const queryName = pathSet[0] as string;
     const collection = pathSet.collection[0] as string;
     const keyword = pathSet.keyword[0] as string;
-    const ranges = pathSet.ranges as number[];
-    const fields = pathSet[3] as string[]; // ['name.first','name.last','gender','birthday']
+    const range = pathSet.range as number[];
+    const fields = pathSet[4] as string[]; // ['name.first','name.last','gender','birthday']
     let results = [];
 
     if (keyword.length > 0) {
       db[collection].find({ 'name.first': new RegExp(keyword, 'i') }, {})
         .fetch((responses: any[]) => {
-          ranges.forEach(i => {
+          range.forEach(i => {
             if (i < responses.length) {
               const res = responses[i];
               const flattenRes = flatten(res); // 階層構造を持つJSONツリーをフラットに変換。
               fields.forEach(field => {
                 const value = flattenRes[field];
                 results.push({
-                  path: [collection, keyword, i, field],
+                  path: [queryName, collection, keyword, i, field],
                   value: value
                 });
               });
@@ -76,30 +80,30 @@ routes.push({
           });
         });
     }
-    console.log(JSON.stringify(results));
+    console.log('falcor route result: ' + JSON.stringify(results));
     return results;
   }
 });
 
 // Page4のクエリで使うルート定義
-routes.push({ 
-  route: "[{keys:collection}][{keys:condition}][{keys:keyword}][{integers:ranges}][{keys:fields}]",
+routes.push({
+  route: "query4[{keys:queryJson}][{integers:range}][{keys:fields}]",
   get: (pathSet: any): any[] => {
-    console.log(`${lodash.repeat('=', 10)} [{keys:collection}][{keys:condition}][{keys:keyword}][{integers:ranges}][{keys:fields}] ${lodash.repeat('=', 10)}`);
+    console.log(`${doubleLine} query4[{keys:queryJson}][{integers:range}][{keys:fields}] ${doubleLine}`);
     console.log(pathSet);
-    const collection = pathSet.collection[0] as string;
-    const condition = pathSet.condition[0] as string;
-    const keyword = pathSet.keyword[0] as string;
-    const ranges = pathSet.ranges as number[];
+    const queryName = pathSet[0] as string;
+    const queryJson = pathSet.queryJson[0] as string;
+    const {collection, condition, keyword} = deserializeQueryJsonForFalcor<QueryJsonForQuery4>(queryJson);
+    const range = pathSet.range as number[];
     const fields = pathSet.fields as string[];
     let results = [];
     let totalItems = 0;
 
     if (keyword.length > 0) {
-      db[collection].find({ [condition]: new RegExp(keyword, 'i') }, {})//.sort({ 'name.first': 1 }, { 'name.last': 1 })
+      db[collection].find({ [condition]: new RegExp(keyword, 'i') }, {})
         .fetch((responses: any[]) => {
           totalItems = responses.length;
-          ranges.forEach(i => {
+          range.forEach(i => {
             if (i < responses.length) {
               const res = responses[i];
               const flattenRes = flatten(res); // 階層構造を持つJSONツリーをフラットに変換。
@@ -115,7 +119,7 @@ routes.push({
                   value = flattenRes[field];
                 }
                 results.push({
-                  path: [collection, condition, keyword, i, field],
+                  path: [queryName, queryJson, i, field],
                   value: value
                 });
               });
@@ -124,10 +128,10 @@ routes.push({
         });
     }
     results.push({
-      path: [collection, condition, keyword, lodash.min(ranges), 'totalItems'], // totalCountプロパティに…
+      path: [queryName, queryJson, lodash.min(range), 'totalItems'], // totalItemsプロパティに…
       value: totalItems // 検索されたドキュメントがいくつあったか代入する。
     });
-    console.log(JSON.stringify(results));
+    console.log('falcor route result: ' + JSON.stringify(results));
     return results;
   }
 });

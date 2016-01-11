@@ -4,6 +4,8 @@ title: 新鮮なFalcorとAngular2のサンプル、季節のRxJSとminimongoを�
 
 [Angular2 Advent Calendar 2015](http://qiita.com/advent-calendar/2015/angular2) 13日目です。  
 
+**Angular2 beta.1に対応しました。**
+
 今回の目玉は注目を集めつつあるニューフェイス、**Falcor**です。  
 …が、  
 終わってみれば「モダンWebアプリにおけるDBアクセスに主眼を置いた総合講座」のようになってしまったかもしれません。  
@@ -99,15 +101,15 @@ const db = new MinimongoFactory().getDatabase();
 ```javascript
 let routes = [];
 routes.push({
-  route: "hoge.foo.bar[{keys:keyword}]",
+  route: "query2[{keys:keyword}]",
   get: (pathSet: any): any[] => {
     const keyword = pathSet.keyword[0] as string;
     let results = [];
     results.push({
-      path: pathSet, 
+      path: pathSet,
       value: `Hello, ${keyword}.`
     });
-    return results; 
+    return results;
   }
 });
 ```
@@ -123,16 +125,18 @@ routes.push({
 ```javascript
 // ./src-front/page1/app-page1.component.ts
 
-model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
 getJsonGraph() {
-  this.model
-    .get(['hoge'])
+  const queryName = 'query1';
+  
+  this.model // this.modelは親クラスで定義されている。
+    .get([queryName])
     .then(jsonGraph => {
-      this.messageByFalcor = jsonGraph ? jsonGraph.json.hoge : '?????';
+      console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
+      this.messageByFalcor = jsonGraph ? jsonGraph.json[queryName] : '?????';
     });
 }
 ```
-一言で説明すると、**Falcorの仮想JSONモデルとも言えるJSON Graphに対して`'hoge'`という構造のJSONを要求したら`{"hoge":"何かしらの値"}`みたいなJSONが返ってくる**ということです。
+一言で説明すると、**Falcorの仮想JSONモデルとも言えるJSON Graphに対して`'query1'`という構造のJSONを要求したら`{"query1":"何かしらの値"}`みたいなJSONが返ってくる**ということです。
 
 実際にサンプルを動かしてみて、サーバーサイドのコンソール、ブラウザのコンソール、ブラウザに表示される内容、HTMLテンプレート、色々観察してみてください。そうじゃないと伝わらない。たぶん。
 
@@ -142,17 +146,25 @@ getJsonGraph() {
 * フロントエンドのTypeScriptファイルは ./src-front フォルダに
 
 分けて保存してあります。  
-上記のコードはフロントエンドの中でもPage1のコードの抜粋です。Page4のこの部分はかなり難しくなっていますよ。抜粋してみましょう。
+上記のコードはフロントエンドの中でもPage1のコードの抜粋です。Page4のこの部分はかなり難しくなっています。抜粋してみましょう。
 ```javascript
 // ./src-front/page4/app-page4.component.ts
 
-model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
 getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
-  this.model
-    .get([this.collection, condition, keyword, { from: from, length: length }, this.fields.concat('totalItems')])
+  const queryName = 'query4';
+  const queryJson = serializeQueryObjectForFalcor<QueryJsonForQuery4>({
+    collection: 'names',
+    condition: condition,
+    keyword: keyword     
+  });
+  
+  this.model // this.modelは親クラスで定義されている。
+    .get([queryName, queryJson, { from: from, length: length }, this.fields.concat('totalItems')])
     .then(jsonGraph => {
-      this.documentsByFalcor = jsonGraph ? _.toArray(jsonGraph.json[this.collection][condition][keyword]) : [];
-      this.totalItemsByFalcor = jsonGraph ? jsonGraph.json[this.collection][condition][keyword][from]['totalItems'] : 0;
+      console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
+      this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[queryName][queryJson]) : [];
+      this.totalItemsByFalcor = jsonGraph ? jsonGraph.json[queryName][queryJson][from]['totalItems'] : 0;
+      console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
     });
 }
 ```
@@ -160,6 +172,50 @@ getJsonGraph(condition: string, keyword: string, from: number = 0, length: numbe
 
 何を言っているかわからないかもしれませんね。これはもう、実際の動きを見てもらいながらソースを追っていただくしかないかなと思います。  
 なるべくヒントになるような情報をコンソールに出力するようにコードを書いたつもりですので、動かしながらコンソールをよく観察してみてください。
+
+`queryJson`という変数にはJSONを少し加工(エスケープ)した文字列を格納し、`this.model.get()`に送り込んでいます。
+というのも`"`,`#`,`%`,`&`,`+`のような一部の文字列はそのままだとFalcorの処理の中でエラーになってしまうからです。  
+```javascript
+// ./src-front/app/falcor-json-serializer.ts
+
+const PLUS = '@PLUS@';
+const AMPERSAND = '@AMPERSAND@';
+const SHARP = '@SHARP@';
+const PERCENT = '@PERCENT@';
+
+// フロントエンドからサーバーサイドにJSONを渡すときにFalcor用にシリアライズする。
+function serializeQueryObjectForFalcor<T>(object: T): string {
+  const json = JSON.stringify(object);
+  let quotesReplacer = "`";
+  while (json.indexOf(quotesReplacer) > -1) {
+    quotesReplacer = quotesReplacer + "'";
+  }
+  const json2 = quotesReplacer + [['"', quotesReplacer], ['[+]', PLUS], ['&', AMPERSAND], ['#', SHARP], ['%', PERCENT]].reduce((p, replacer) => {
+    return p.replace(new RegExp(replacer[0], 'g'), replacer[1]);
+  }, json); // JSONの先頭にquotesReplacerを付け加える。
+  console.log('serialized query json: ' + json2);
+  return json2;
+}
+
+// サーバーサイドがフロントエンドからJSONを受け取ったときにJavaScriptオブジェクトにデシリアライズする。
+function deserializeQueryJsonForFalcor<T>(json: string): T {
+  const quotesReplacer = json.match(/^.*?{/)[0].slice(0, -1);
+  const json2 = [[quotesReplacer, '"'], [PLUS, '+'], [AMPERSAND, '&'], [SHARP, '#'], [PERCENT, '%']].reduce((p, replacer) => {
+    return p.replace(new RegExp(replacer[0], 'g'), replacer[1]);
+  }, json).slice(1); // 先頭に余分な " が残るのでsliceで取り除く。
+  console.log('deserialized query json: ' + json2);
+  return JSON.parse(json2);
+}
+
+export {serializeQueryObjectForFalcor, deserializeQueryJsonForFalcor}
+```
+Falcorの思想とは逆行するようですが、**サーバーサイドのパラメーターの実装をフロントエンドが把握している場合**、TypeScriptのジェネリックを使うことで値の受け渡しを確実なものにすることができます。
+
+サンプルコードのPage4ではジェネリックを使っていますので、フロントエンドからサーバーサイドにどのように値が渡されているかを追ってみてください。  
+このときサーバーサイドではデストラクチャリングという書き方をすることで一行で受け渡しを完了できます。下記はその部分の抜粋です。
+```javascript
+const {collection, condition, keyword} = deserializeQueryJsonForFalcor<QueryJsonForQuery4>(queryJson);
+```
 
 ### 起動から画面表示までの大まかな流れ
 Angular2に不慣れな方は、そもそも起動して画面が表示されるまでにどういう順番でファイルを読み込んでいるのかわからないかもしれないので、簡単に説明します。
