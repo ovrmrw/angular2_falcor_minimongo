@@ -152,7 +152,7 @@ getJsonGraph() {
 
 getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
   const queryName = 'query4';
-  const queryJson = serializeQueryObjectForFalcor<QueryJsonForQuery4>({
+  const queryJson = serializeQueryObjectForFalcor<QueryParamsForQuery4>({
     collection: 'names',
     condition: condition,
     keyword: keyword     
@@ -214,7 +214,17 @@ Falcorの思想とは逆行するようですが、**サーバーサイドのパ
 サンプルコードのPage4ではジェネリックを使っていますので、フロントエンドからサーバーサイドにどのように値が渡されているかを追ってみてください。  
 このときサーバーサイドではデストラクチャリングという書き方をすることで一行で受け渡しを完了できます。下記はその部分の抜粋です。
 ```javascript
-const {collection, condition, keyword} = deserializeQueryJsonForFalcor<QueryJsonForQuery4>(queryJson);
+const {collection, condition, keyword} = deserializeQueryJsonForFalcor<QueryParamsForQuery4>(queryJson);
+```
+ちなみに`QueryParamsForQuery4`の定義は下記の通りです。
+```javascript
+// ./src-server/query-params.d.ts
+
+declare interface QueryParamsForQuery4 {
+  collection: string,
+  condition: string,
+  keyword: string
+}
 ```
 
 ### 起動から画面表示までの大まかな流れ

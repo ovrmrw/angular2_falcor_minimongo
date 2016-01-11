@@ -93,7 +93,7 @@ routes.push({
     console.log(pathSet);
     const queryName = pathSet[0] as string;
     const queryJson = pathSet.queryJson[0] as string;
-    const {collection, condition, keyword} = deserializeQueryJsonForFalcor<QueryJsonForQuery4>(queryJson);
+    const {collection, condition, keyword} = deserializeQueryJsonForFalcor<QueryParamsForQuery4>(queryJson);
     const range = pathSet.range as number[];
     const fields = pathSet.fields as string[];
     let results = [];

@@ -107,7 +107,7 @@ export class AppPage4 extends AppPageParent implements OnInit {
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
     const queryName = 'query4';
-    const queryJson = serializeQueryObjectForFalcor<QueryJsonForQuery4>({
+    const queryJson = serializeQueryObjectForFalcor<QueryParamsForQuery4>({
       collection: 'names',
       condition: condition,
       keyword: keyword     
