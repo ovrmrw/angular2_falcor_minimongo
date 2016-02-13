@@ -1,3 +1,5 @@
+// Compiled using typings@0.6.8
+// Source: https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/86dbea8fc37d9473fee465da4f0a21bea4f8cbd9/lodash/lodash-3.10.d.ts
 // Type definitions for Lo-Dash
 // Project: http://lodash.com/
 // Definitions by: Brian Zengel <https://github.com/bczengel>, Ilya Mochalov <https://github.com/chrootsu>
@@ -230,7 +232,6 @@ declare module _ {
     interface LoDashExplicitObjectWrapper<T> extends LoDashExplicitWrapperBase<T, LoDashExplicitObjectWrapper<T>> { }
 
     interface LoDashImplicitArrayWrapper<T> extends LoDashImplicitWrapperBase<T[], LoDashImplicitArrayWrapper<T>> {
-        join(seperator?: string): string;
         pop(): T;
         push(...items: T[]): LoDashImplicitArrayWrapper<T>;
         shift(): T;
@@ -245,6 +246,49 @@ declare module _ {
     interface LoDashImplicitNumberArrayWrapper extends LoDashImplicitArrayWrapper<number> { }
 
     interface LoDashExplicitNumberArrayWrapper extends LoDashExplicitArrayWrapper<number> { }
+
+    // join (exists only in wrappers)
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.join
+         */
+        join(separator?: string): string;
+    }
+
+    interface LoDashImplicitArrayWrapper<T> {
+        /**
+         * @see _.join
+         */
+        join(separator?: string): string;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        /**
+         * @see _.join
+         */
+        join(separator?: string): string;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.join
+         */
+        join(separator?: string): LoDashExplicitWrapper<string>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.join
+         */
+        join(separator?: string): LoDashExplicitWrapper<string>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.join
+         */
+        join(separator?: string): LoDashExplicitWrapper<string>;
+    }
 
     /*********
      * Array *
@@ -1138,47 +1182,72 @@ declare module _ {
         first<TResult>(): TResult;
     }
 
-    interface MaybeNestedList<T> extends List<T|List<T>> { }
-    interface RecursiveArray<T> extends Array<T|RecursiveArray<T>> { }
-    interface ListOfRecursiveArraysOrValues<T> extends List<T|RecursiveArray<T>> { }
-    interface RecursiveList<T> extends List<T|RecursiveList<T>> { }
+    interface RecursiveArray<T> extends Array<T|RecursiveArray<T>> {}
+    interface ListOfRecursiveArraysOrValues<T> extends List<T|RecursiveArray<T>> {}
 
     //_.flatten
     interface LoDashStatic {
         /**
-         * Flattens a nested array a single level.
-         *
-         * _.flatten(x) is equivalent to _.flatten(x, false);
-         *
-         * @param array The array to flatten.
-         * @return `array` flattened.
-         **/
-        flatten<T>(array: MaybeNestedList<T>): T[];
-
-        /**
-         * Flattens a nested array. If isDeep is true the array is recursively flattened, otherwise it is only
+         * Flattens a nested array. If isDeep is true the array is recursively flattened, otherwise it’s only
          * flattened a single level.
          *
-         * If you know whether or not this should be recursively at compile time, you typically want to use a
-         * version without a boolean parameter (i.e. `_.flatten(x)` or `_.flattenDeep(x)`).
-         *
          * @param array The array to flatten.
-         * @param deep Specify a deep flatten.
-         * @return `array` flattened.
-         **/
-        flatten<T>(array: RecursiveList<T>, isDeep: boolean): List<T> | RecursiveList<T>;
+         * @param isDeep Specify a deep flatten.
+         * @return Returns the new flattened array.
+         */
+        flatten<T>(array: ListOfRecursiveArraysOrValues<T>, isDeep: boolean): T[];
+
+        /**
+         * @see _.flatten
+         */
+        flatten<T>(array: List<T|T[]>): T[];
+
+        /**
+         * @see _.flatten
+         */
+        flatten<T>(array: ListOfRecursiveArraysOrValues<T>): RecursiveArray<T>;
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.flatten
+         */
+        flatten(): LoDashImplicitArrayWrapper<string>;
     }
 
     interface LoDashImplicitArrayWrapper<T> {
         /**
          * @see _.flatten
-         **/
-        flatten<T>(): LoDashImplicitArrayWrapper<any>;
+         */
+        flatten<TResult>(isDeep?: boolean): LoDashImplicitArrayWrapper<TResult>;
+    }
 
+    interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.flatten
-         **/
-        flatten<T>(isShallow: boolean): LoDashImplicitArrayWrapper<any>;
+         */
+        flatten<TResult>(isDeep?: boolean): LoDashImplicitArrayWrapper<TResult>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.flatten
+         */
+        flatten(): LoDashExplicitArrayWrapper<string>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.flatten
+         */
+        flatten<TResult>(isDeep?: boolean): LoDashExplicitArrayWrapper<TResult>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.flatten
+         */
+        flatten<TResult>(isDeep?: boolean): LoDashExplicitArrayWrapper<TResult>;
     }
 
     //_.flattenDeep
@@ -1189,17 +1258,14 @@ declare module _ {
          * @param array The array to recursively flatten.
          * @return Returns the new flattened array.
          */
-        flattenDeep<T>(array: RecursiveArray<T>): T[];
-
-        /**
-         * @see _.flattenDeep
-         */
         flattenDeep<T>(array: ListOfRecursiveArraysOrValues<T>): T[];
+    }
 
+    interface LoDashImplicitWrapper<T> {
         /**
          * @see _.flattenDeep
          */
-        flattenDeep<T>(array: RecursiveList<T>): any[];
+        flattenDeep(): LoDashImplicitArrayWrapper<string>;
     }
 
     interface LoDashImplicitArrayWrapper<T> {
@@ -1214,6 +1280,13 @@ declare module _ {
          * @see _.flattenDeep
          */
         flattenDeep<T>(): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.flattenDeep
+         */
+        flattenDeep(): LoDashExplicitArrayWrapper<string>;
     }
 
     interface LoDashExplicitArrayWrapper<T> {
@@ -2837,343 +2910,810 @@ declare module _ {
     //_.uniq
     interface LoDashStatic {
         /**
-        * Creates a duplicate-value-free version of an array using strict equality for comparisons,
-        * i.e. ===. If the array is sorted, providing true for isSorted will use a faster algorithm.
-        * If a callback is provided each element of array is passed through the callback before
-        * uniqueness is computed. The callback is bound to thisArg and invoked with three arguments;
-        * (value, index, array).
-        *
-        * If a property name is provided for callback the created "_.pluck" style callback will
-        * return the property value of the given element.
-        *
-        * If an object is provided for callback the created "_.where" style callback will return
-        * true for elements that have the properties of the given object, else false.
-        * @param array Array to remove duplicates from.
-        * @param isSorted True if `array` is already sorted, optiona, default = false.
-        * @param iterator Transform the elements of `array` before comparisons for uniqueness.
-        * @param context 'this' object in `iterator`, optional.
-        * @return Copy of `array` where all elements are unique.
-        **/
-        uniq<T, TSort>(array: Array<T>, isSorted?: boolean): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        uniq<T, TSort>(array: List<T>, isSorted?: boolean): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        uniq<T, TSort>(
-            array: Array<T>,
-            isSorted: boolean,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        uniq<T, TSort>(
-            array: List<T>,
-            isSorted: boolean,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        uniq<T, TSort>(
-            array: Array<T>,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        uniq<T, TSort>(
-            array: List<T>,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
-
-        /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        uniq<T>(
-            array: Array<T>,
-            isSorted: boolean,
-            pluckValue: string): T[];
-
-        /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
+         * Creates a duplicate-free version of an array, using SameValueZero for equality comparisons, in which only
+         * the first occurrence of each element is kept. Providing true for isSorted performs a faster search
+         * algorithm for sorted arrays. If an iteratee function is provided it’s invoked for each element in the
+         * array to generate the criterion by which uniqueness is computed. The iteratee is bound to thisArg and
+         * invoked with three arguments: (value, index, array).
+         *
+         * If a property name is provided for iteratee the created _.property style callback returns the property
+         * value of the given element.
+         *
+         * If a value is also provided for thisArg the created _.matchesProperty style callback returns true for
+         * elements that have a matching property value, else false.
+         *
+         * If an object is provided for iteratee the created _.matches style callback returns true for elements that
+         * have the properties of the given object, else false.
+         *
+         * @alias _.unique
+         *
+         * @param array The array to inspect.
+         * @param isSorted Specify the array is sorted.
+         * @param iteratee The function invoked per iteration.
+         * @param thisArg iteratee
+         * @return Returns the new duplicate-value-free array.
+         */
         uniq<T>(
             array: List<T>,
-            isSorted: boolean,
-            pluckValue: string): T[];
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): T[];
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
+         * @see _.uniq
+         */
+        uniq<T, TSort>(
+            array: List<T>,
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
         uniq<T>(
-            array: Array<T>,
-            pluckValue: string): T[];
+            array: List<T>,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): T[];
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
+         * @see _.uniq
+         */
+        uniq<T, TSort>(
+            array: List<T>,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
         uniq<T>(
             array: List<T>,
-            pluckValue: string): T[];
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): T[];
 
         /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        uniq<W, T>(
-            array: Array<T>,
-            isSorted: boolean,
-            whereValue: W): T[];
-
-        /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        uniq<W, T>(
+         * @see _.uniq
+         */
+        uniq<T>(
             array: List<T>,
-            isSorted: boolean,
-            whereValue: W): T[];
+            iteratee?: string,
+            thisArg?: any
+        ): T[];
 
         /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        uniq<W, T>(
-            array: Array<T>,
-            whereValue: W): T[];
-
-        /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        uniq<W, T>(
+         * @see _.uniq
+         */
+        uniq<T>(
             array: List<T>,
-            whereValue: W): T[];
+            isSorted?: boolean,
+            iteratee?: Object
+        ): T[];
 
         /**
-        * @see _.uniq
-        **/
-        unique<T>(array: Array<T>, isSorted?: boolean): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        unique<T>(array: List<T>, isSorted?: boolean): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        unique<T, TSort>(
-            array: Array<T>,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        unique<T, TSort>(
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}, T>(
             array: List<T>,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): T[];
 
         /**
-        * @see _.uniq
-        **/
-        unique<T, TSort>(
-            array: Array<T>,
-            isSorted: boolean,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
-
-        /**
-        * @see _.uniq
-        **/
-        unique<T, TSort>(
+         * @see _.uniq
+         */
+        uniq<T>(
             array: List<T>,
-            isSorted: boolean,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): T[];
+            iteratee?: Object
+        ): T[];
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        unique<T>(
-            array: Array<T>,
-            isSorted: boolean,
-            pluckValue: string): T[];
-
-        /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        unique<T>(
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}, T>(
             array: List<T>,
-            isSorted: boolean,
-            pluckValue: string): T[];
+            iteratee?: TWhere
+        ): T[];
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.uniq
+         */
+        uniq<TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        unique<T>(
-            array: Array<T>,
-            pluckValue: string): T[];
-
-        /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        unique<T>(
-            array: List<T>,
-            pluckValue: string): T[];
-
-        /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        unique<W, T>(
-            array: Array<T>,
-            whereValue?: W): T[];
-
-        /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        unique<W, T>(
-            array: List<T>,
-            whereValue?: W): T[];
-
-        /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        unique<W, T>(
-            array: Array<T>,
-            isSorted: boolean,
-            whereValue?: W): T[];
-
-        /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        unique<W, T>(
-            array: List<T>,
-            isSorted: boolean,
-            whereValue?: W): T[];
+         * @see _.uniq
+         */
+        uniq<TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
     }
 
     interface LoDashImplicitArrayWrapper<T> {
         /**
-        * @see _.uniq
-        **/
-        uniq<TSort>(isSorted?: boolean): LoDashImplicitArrayWrapper<T>;
-
-        /**
-        * @see _.uniq
-        **/
+         * @see _.uniq
+         */
         uniq<TSort>(
-            isSorted: boolean,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): LoDashImplicitArrayWrapper<T>;
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        **/
+         * @see _.uniq
+         */
         uniq<TSort>(
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): LoDashImplicitArrayWrapper<T>;
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
+         * @see _.uniq
+         */
         uniq(
-            isSorted: boolean,
-            pluckValue: string): LoDashImplicitArrayWrapper<T>;
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        uniq(pluckValue: string): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        uniq(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        uniq<W>(
-            isSorted: boolean,
-            whereValue: W): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        uniq<W>(
-            whereValue: W): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}>(
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        uniq<T>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        **/
-        unique<TSort>(isSorted?: boolean): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        uniq<T, TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        **/
+         * @see _.uniq
+         */
+        uniq<T>(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T, TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            isSorted?: boolean,
+            iteratee?: Object
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}, T>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            iteratee?: Object
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}, T>(
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.uniq
+         */
+        uniq<TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.uniq
+         */
+        uniq<TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq(
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}>(
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        uniq<T>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T, TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T, TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            isSorted?: boolean,
+            iteratee?: Object
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}, T>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<T>(
+            iteratee?: Object
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        uniq<TWhere extends {}, T>(
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    //_.unique
+    interface LoDashStatic {
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            array: List<T>,
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T, TSort>(
+            array: List<T>,
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            array: List<T>,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T, TSort>(
+            array: List<T>,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            array: List<T>,
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            array: List<T>,
+            iteratee?: string,
+            thisArg?: any
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            array: List<T>,
+            isSorted?: boolean,
+            iteratee?: Object
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}, T>(
+            array: List<T>,
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            array: List<T>,
+            iteratee?: Object
+        ): T[];
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}, T>(
+            array: List<T>,
+            iteratee?: TWhere
+        ): T[];
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.uniq
+         */
         unique<TSort>(
-            isSorted: boolean,
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): LoDashImplicitArrayWrapper<T>;
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        **/
+         * @see _.uniq
+         */
         unique<TSort>(
-            callback: ListIterator<T, TSort>,
-            thisArg?: any): LoDashImplicitArrayWrapper<T>;
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashImplicitArrayWrapper<T> {
+        /**
+         * @see _.uniq
+         */
+        unique<TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
+         * @see _.uniq
+         */
+        unique<TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
         unique(
-            isSorted: boolean,
-            pluckValue: string): LoDashImplicitArrayWrapper<T>;
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param pluckValue _.pluck style callback
-        **/
-        unique(pluckValue: string): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        unique(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        unique<W>(
-            isSorted: boolean,
-            whereValue: W): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        unique<TWhere extends {}>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.uniq
-        * @param whereValue _.where style callback
-        **/
-        unique<W>(
-            whereValue: W): LoDashImplicitArrayWrapper<T>;
+         * @see _.uniq
+         */
+        unique<TWhere extends {}>(
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        unique<T>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T, TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T, TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            isSorted?: boolean,
+            iteratee?: Object
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}, T>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            iteratee?: Object
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}, T>(
+            iteratee?: TWhere
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.uniq
+         */
+        unique<TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.uniq
+         */
+        unique<TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique(
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}>(
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        unique<T>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T, TSort>(
+            isSorted?: boolean,
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T, TSort>(
+            iteratee?: ListIterator<T, TSort>,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            isSorted?: boolean,
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            isSorted?: boolean,
+            iteratee?: Object
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}, T>(
+            isSorted?: boolean,
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<T>(
+            iteratee?: Object
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.uniq
+         */
+        unique<TWhere extends {}, T>(
+            iteratee?: TWhere
+        ): LoDashExplicitArrayWrapper<T>;
     }
 
     //_.unzip
@@ -4062,7 +4602,16 @@ declare module _ {
          * @see _.some
          */
         any<T>(
-            collection: List<T>|Dictionary<T>,
+            collection: NumericDictionary<T>,
+            predicate?: NumericDictionaryIterator<T, boolean>,
+            thisArg?: any
+        ): boolean;
+
+        /**
+         * @see _.some
+         */
+        any<T>(
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
             predicate?: string,
             thisArg?: any
         ): boolean;
@@ -4071,7 +4620,7 @@ declare module _ {
          * @see _.some
          */
         any<TObject extends {}, T>(
-            collection: List<T>|Dictionary<T>,
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
             predicate?: TObject
         ): boolean;
     }
@@ -4081,7 +4630,7 @@ declare module _ {
          * @see _.some
          */
         any(
-            predicate?: ListIterator<T, boolean>,
+            predicate?: ListIterator<T, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): boolean;
 
@@ -4106,7 +4655,7 @@ declare module _ {
          * @see _.some
          */
         any<TResult>(
-            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>,
+            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): boolean;
 
@@ -4131,7 +4680,7 @@ declare module _ {
          * @see _.some
          */
         any(
-            predicate?: ListIterator<T, boolean>,
+            predicate?: ListIterator<T, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): LoDashExplicitWrapper<boolean>;
 
@@ -4156,7 +4705,7 @@ declare module _ {
          * @see _.some
          */
         any<TResult>(
-            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>,
+            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): LoDashExplicitWrapper<boolean>;
 
@@ -4437,87 +4986,193 @@ declare module _ {
     //_.countBy
     interface LoDashStatic {
         /**
-        * Creates an object composed of keys generated from the results of running each element
-        * of collection through the callback. The corresponding value of each key is the number
-        * of times the key was returned by the callback. The callback is bound to thisArg and
-        * invoked with three arguments; (value, index|key, collection).
-        *
-        * If a property name is provided for callback the created "_.pluck" style callback will
-        * return the property value of the given element.
-        *
-        * If an object is provided for callback the created "_.where" style callback will return
-        * true for elements that have the properties of the given object, else false.
-        * @param collection The collection to iterate over.
-        * @param callback The function called per iteration.
-        * @param thisArg The this binding of callback.
-        * @return Returns the composed aggregate object.
-        **/
-        countBy<T>(
-            collection: Array<T>,
-            callback?: ListIterator<T, any>,
-            thisArg?: any): Dictionary<number>;
-
-        /**
-        * @see _.countBy
-        * @param callback Function name
-        **/
+         * Creates an object composed of keys generated from the results of running each element of collection through
+         * iteratee. The corresponding value of each key is the number of times the key was returned by iteratee. The
+         * iteratee is bound to thisArg and invoked with three arguments:
+         * (value, index|key, collection).
+         *
+         * If a property name is provided for iteratee the created _.property style callback returns the property
+         * value of the given element.
+         *
+         * If a value is also provided for thisArg the created _.matchesProperty style callback returns true for
+         * elements that have a matching property value, else false.
+         *
+         * If an object is provided for iteratee the created _.matches style callback returns true for elements that
+         * have the properties of the given object, else false.
+         *
+         * @param collection The collection to iterate over.
+         * @param iteratee The function invoked per iteration.
+         * @param thisArg The this binding of iteratee.
+         * @return Returns the composed aggregate object.
+         */
         countBy<T>(
             collection: List<T>,
-            callback?: ListIterator<T, any>,
-            thisArg?: any): Dictionary<number>;
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): Dictionary<number>;
 
         /**
-        * @see _.countBy
-        * @param callback Function name
-        **/
+         * @see _.countBy
+         */
         countBy<T>(
             collection: Dictionary<T>,
-            callback?: DictionaryIterator<T, any>,
-            thisArg?: any): Dictionary<number>;
+            iteratee?: DictionaryIterator<T, any>,
+            thisArg?: any
+        ): Dictionary<number>;
 
         /**
-        * @see _.countBy
-        * @param callback Function name
-        **/
+         * @see _.countBy
+         */
         countBy<T>(
-            collection: Array<T>,
-            callback: string,
-            thisArg?: any): Dictionary<number>;
+            collection: NumericDictionary<T>,
+            iteratee?: NumericDictionaryIterator<T, any>,
+            thisArg?: any
+        ): Dictionary<number>;
 
         /**
-        * @see _.countBy
-        * @param callback Function name
-        **/
+         * @see _.countBy
+         */
         countBy<T>(
-            collection: List<T>,
-            callback: string,
-            thisArg?: any): Dictionary<number>;
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
+            iteratee?: string,
+            thisArg?: any
+        ): Dictionary<number>;
 
         /**
-        * @see _.countBy
-        * @param callback Function name
-        **/
+         * @see _.countBy
+         */
+        countBy<W, T>(
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
+            iteratee?: W
+        ): Dictionary<number>;
+
+        /**
+         * @see _.countBy
+         */
         countBy<T>(
-            collection: Dictionary<T>,
-            callback: string,
-            thisArg?: any): Dictionary<number>;
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
+            iteratee?: Object
+        ): Dictionary<number>;
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.countBy
+         */
+        countBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
     }
 
     interface LoDashImplicitArrayWrapper<T> {
         /**
-        * @see _.countBy
-        **/
+         * @see _.countBy
+         */
         countBy(
-            callback?: ListIterator<T, any>,
-            thisArg?: any): LoDashImplicitObjectWrapper<Dictionary<number>>;
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
 
         /**
-        * @see _.countBy
-        * @param callback Function name
-        **/
+         * @see _.countBy
+         */
         countBy(
-            callback: string,
-            thisArg?: any): LoDashImplicitObjectWrapper<Dictionary<number>>;
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy<W>(
+            iteratee?: W
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        /**
+         * @see _.countBy
+         */
+        countBy<T>(
+            iteratee?: ListIterator<T, any>|DictionaryIterator<T, any>|NumericDictionaryIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy<W>(
+            iteratee?: W
+        ): LoDashImplicitObjectWrapper<Dictionary<number>>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.countBy
+         */
+        countBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.countBy
+         */
+        countBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy<W>(
+            iteratee?: W
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.countBy
+         */
+        countBy<T>(
+            iteratee?: ListIterator<T, any>|DictionaryIterator<T, any>|NumericDictionaryIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
+
+        /**
+         * @see _.countBy
+         */
+        countBy<W>(
+            iteratee?: W
+        ): LoDashExplicitObjectWrapper<Dictionary<number>>;
     }
 
     //_.detect
@@ -6099,65 +6754,207 @@ declare module _ {
     //_.indexBy
     interface LoDashStatic {
         /**
-        * Creates an object composed of keys generated from the results of running each element
-        * of the collection through the given callback. The corresponding value of each key is
-        * the last element responsible for generating the key. The callback is bound to thisArg
-        * and invoked with three arguments; (value, index|key, collection).
-        *
-        * If a property name is provided for callback the created "_.pluck" style callback will
-        * return the property value of the given element.
-        *
-        * If an object is provided for callback the created "_.where" style callback will return
-        * true for elements that have the properties of the given object, else false.
-        * @param collection The collection to iterate over.
-        * @param callback The function called per iteration.
-        * @param thisArg The this binding of callback.
-        * @return Returns the composed aggregate object.
-        **/
-        indexBy<T>(
-            list: Array<T>,
-            iterator: ListIterator<T, any>,
-            context?: any): Dictionary<T>;
-
-        /**
-        * @see _.indexBy
-        **/
-        indexBy<T>(
-            list: List<T>,
-            iterator: ListIterator<T, any>,
-            context?: any): Dictionary<T>;
-
-        /**
-        * @see _.indexBy
-        * @param pluckValue _.pluck style callback
-        **/
-        indexBy<T>(
-            collection: Array<T>,
-            pluckValue: string): Dictionary<T>;
-
-        /**
-        * @see _.indexBy
-        * @param pluckValue _.pluck style callback
-        **/
+         * Creates an object composed of keys generated from the results of running each element of collection through
+         * iteratee. The corresponding value of each key is the last element responsible for generating the key. The
+         * iteratee function is bound to thisArg and invoked with three arguments:
+         * (value, index|key, collection).
+         *
+         * If a property name is provided for iteratee the created _.property style callback returns the property
+         * value of the given element.
+         *
+         * If a value is also provided for thisArg the created _.matchesProperty style callback returns true for
+         * elements that have a matching property value, else false.
+         *
+         * If an object is provided for iteratee the created _.matches style callback returns true for elements that
+         * have the properties of the given object, else false.
+         *
+         * @param collection The collection to iterate over.
+         * @param iteratee The function invoked per iteration.
+         * @param thisArg The this binding of iteratee.
+         * @return Returns the composed aggregate object.
+         */
         indexBy<T>(
             collection: List<T>,
-            pluckValue: string): Dictionary<T>;
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): Dictionary<T>;
 
         /**
-        * @see _.indexBy
-        * @param whereValue _.where style callback
-        **/
-        indexBy<W, T>(
-            collection: Array<T>,
-            whereValue: W): Dictionary<T>;
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            collection: NumericDictionary<T>,
+            iteratee?: NumericDictionaryIterator<T, any>,
+            thisArg?: any
+        ): Dictionary<T>;
 
         /**
-        * @see _.indexBy
-        * @param whereValue _.where style callback
-        **/
-        indexBy<W, T>(
-            collection: List<T>,
-            whereValue: W): Dictionary<T>;
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            collection: Dictionary<T>,
+            iteratee?: DictionaryIterator<T, any>,
+            thisArg?: any
+        ): Dictionary<T>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            collection: List<T>|NumericDictionary<T>|Dictionary<T>,
+            iteratee?: string,
+            thisArg?: any
+        ): Dictionary<T>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<W extends Object, T>(
+            collection: List<T>|NumericDictionary<T>|Dictionary<T>,
+            iteratee?: W
+        ): Dictionary<T>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            collection: List<T>|NumericDictionary<T>|Dictionary<T>,
+            iteratee?: Object
+        ): Dictionary<T>;
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.indexBy
+         */
+        indexBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+    }
+
+    interface LoDashImplicitArrayWrapper<T> {
+        /**
+         * @see _.indexBy
+         */
+        indexBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<W extends Object>(
+            iteratee?: W
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            iteratee?: ListIterator<T, any>|NumericDictionaryIterator<T, any>|DictionaryIterator<T, any>,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<W extends Object, T>(
+            iteratee?: W
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            iteratee?: Object
+        ): LoDashImplicitObjectWrapper<Dictionary<T>>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.indexBy
+         */
+        indexBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.indexBy
+         */
+        indexBy(
+            iteratee?: ListIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<W extends Object>(
+            iteratee?: W
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            iteratee?: ListIterator<T, any>|NumericDictionaryIterator<T, any>|DictionaryIterator<T, any>,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            iteratee?: string,
+            thisArg?: any
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<W extends Object, T>(
+            iteratee?: W
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
+
+        /**
+         * @see _.indexBy
+         */
+        indexBy<T>(
+            iteratee?: Object
+        ): LoDashExplicitObjectWrapper<Dictionary<T>>;
     }
 
     //_.invoke
@@ -7477,7 +8274,16 @@ declare module _ {
          * @see _.some
          */
         some<T>(
-            collection: List<T>|Dictionary<T>,
+            collection: NumericDictionary<T>,
+            predicate?: NumericDictionaryIterator<T, boolean>,
+            thisArg?: any
+        ): boolean;
+
+        /**
+         * @see _.some
+         */
+        some<T>(
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
             predicate?: string,
             thisArg?: any
         ): boolean;
@@ -7486,7 +8292,7 @@ declare module _ {
          * @see _.some
          */
         some<TObject extends {}, T>(
-            collection: List<T>|Dictionary<T>,
+            collection: List<T>|Dictionary<T>|NumericDictionary<T>,
             predicate?: TObject
         ): boolean;
     }
@@ -7496,7 +8302,7 @@ declare module _ {
          * @see _.some
          */
         some(
-            predicate?: ListIterator<T, boolean>,
+            predicate?: ListIterator<T, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): boolean;
 
@@ -7521,7 +8327,7 @@ declare module _ {
          * @see _.some
          */
         some<TResult>(
-            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>,
+            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): boolean;
 
@@ -7546,7 +8352,7 @@ declare module _ {
          * @see _.some
          */
         some(
-            predicate?: ListIterator<T, boolean>,
+            predicate?: ListIterator<T, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): LoDashExplicitWrapper<boolean>;
 
@@ -7571,7 +8377,7 @@ declare module _ {
          * @see _.some
          */
         some<TResult>(
-            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>,
+            predicate?: ListIterator<TResult, boolean>|DictionaryIterator<TResult, boolean>|NumericDictionaryIterator<T, boolean>,
             thisArg?: any
         ): LoDashExplicitWrapper<boolean>;
 
@@ -7830,66 +8636,211 @@ declare module _ {
     //_.sortByOrder
     interface LoDashStatic {
         /**
-        * This method is like "_.sortByAll" except that it allows specifying the sort orders of the
-        * iteratees to sort by. If orders is unspecified, all values are sorted in ascending order.
-        * Otherwise, a value is sorted in ascending order if its corresponding order is "asc", and
-        * descending if "desc".
-        *
-        * If a property name is provided for an iteratee the created "_.property" style callback
-        * returns the property value of the given element.
-        *
-        * If an object is provided for an iteratee the created "_.matches" style callback returns
-        * true for elements that have the properties of the given object, else false.
-        *
-        * @param collection The collection to iterate over.
-        * @param callback The function called per iteration.
-        * @param thisArg The this binding of callback.
-        * @return A new array of sorted elements.
-        **/
-        sortByOrder<T>(
-            collection: Array<T>,
-            iteratees: (ListIterator<T, any>|string|Object)[],
-            orders?: boolean[]): T[];
+         * This method is like _.sortByAll except that it allows specifying the sort orders of the iteratees to sort
+         * by. If orders is unspecified, all values are sorted in ascending order. Otherwise, a value is sorted in
+         * ascending order if its corresponding order is "asc", and descending if "desc".
+         *
+         * If a property name is provided for an iteratee the created _.property style callback returns the property
+         * value of the given element.
+         *
+         * If an object is provided for an iteratee the created _.matches style callback returns true for elements
+         * that have the properties of the given object, else false.
+         *
+         * @param collection The collection to iterate over.
+         * @param iteratees The iteratees to sort by.
+         * @param orders The sort orders of iteratees.
+         * @return Returns the new sorted array.
+         */
+        sortByOrder<W extends Object, T>(
+            collection: List<T>,
+            iteratees: ListIterator<T, any>|string|W|(ListIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): T[];
 
         /**
-        * @see _.sortByOrder
-        **/
+         * @see _.sortByOrder
+         */
         sortByOrder<T>(
             collection: List<T>,
-            iteratees: (ListIterator<T, any>|string|Object)[],
-            orders?: boolean[]): T[];
+            iteratees: ListIterator<T, any>|string|Object|(ListIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): T[];
 
         /**
-        * @see _.sortByOrder
-        **/
-        sortByOrder<T>(
-            collection: Array<T>,
-            iteratees: (ListIterator<T, any>|string|Object)[],
-            orders?: string[]): T[];
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            collection: NumericDictionary<T>,
+            iteratees: NumericDictionaryIterator<T, any>|string|W|(NumericDictionaryIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): T[];
 
         /**
-        * @see _.sortByOrder
-        **/
+         * @see _.sortByOrder
+         */
         sortByOrder<T>(
-            collection: List<T>,
-            iteratees: (ListIterator<T, any>|string|Object)[],
-            orders?: string[]): T[];
+            collection: NumericDictionary<T>,
+            iteratees: NumericDictionaryIterator<T, any>|string|Object|(NumericDictionaryIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): T[];
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            collection: Dictionary<T>,
+            iteratees: DictionaryIterator<T, any>|string|W|(DictionaryIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): T[];
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            collection: Dictionary<T>,
+            iteratees: DictionaryIterator<T, any>|string|Object|(DictionaryIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): T[];
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder(
+            iteratees: ListIterator<T, any>|string|(ListIterator<T, any>|string)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
     }
 
     interface LoDashImplicitArrayWrapper<T> {
         /**
-        * @see _.sortByOrder
-        **/
-        sortByOrder(
-            iteratees: (ListIterator<T, any>|string|Object)[],
-            orders?: boolean[]): LoDashImplicitArrayWrapper<T>;
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object>(
+            iteratees: ListIterator<T, any>|string|W|(ListIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            iteratees: ListIterator<T, any>|string|W|(ListIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
 
         /**
-        * @see _.sortByOrder
-        **/
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            iteratees: ListIterator<T, any>|string|Object|(ListIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            iteratees: NumericDictionaryIterator<T, any>|string|W|(NumericDictionaryIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            iteratees: NumericDictionaryIterator<T, any>|string|Object|(NumericDictionaryIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            iteratees: DictionaryIterator<T, any>|string|W|(DictionaryIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            iteratees: DictionaryIterator<T, any>|string|Object|(DictionaryIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashImplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.sortByOrder
+         */
         sortByOrder(
-            iteratees: (ListIterator<T, any>|string|Object)[],
-            orders?: string[]): LoDashImplicitArrayWrapper<T>;
+            iteratees: ListIterator<T, any>|string|(ListIterator<T, any>|string)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object>(
+            iteratees: ListIterator<T, any>|string|W|(ListIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            iteratees: ListIterator<T, any>|string|W|(ListIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            iteratees: ListIterator<T, any>|string|Object|(ListIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            iteratees: NumericDictionaryIterator<T, any>|string|W|(NumericDictionaryIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            iteratees: NumericDictionaryIterator<T, any>|string|Object|(NumericDictionaryIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<W extends Object, T>(
+            iteratees: DictionaryIterator<T, any>|string|W|(DictionaryIterator<T, any>|string|W)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
+
+        /**
+         * @see _.sortByOrder
+         */
+        sortByOrder<T>(
+            iteratees: DictionaryIterator<T, any>|string|Object|(DictionaryIterator<T, any>|string|Object)[],
+            orders?: boolean|string|(boolean|string)[]
+        ): LoDashExplicitArrayWrapper<T>;
     }
 
     //_.where
@@ -8076,78 +9027,148 @@ declare module _ {
     }
 
     //_.bind
-    interface LoDashStatic {
-        /**
-        * Creates a function that, when called, invokes func with the this binding of thisArg
-        * and prepends any additional bind arguments to those provided to the bound function.
-        * @param func The function to bind.
-        * @param thisArg The this binding of func.
-        * @param args Arguments to be partially applied.
-        * @return The new bound function.
-        **/
-        bind(
+    interface FunctionBind {
+        placeholder: any;
+
+        <T extends Function, TResult extends Function>(
+            func: T,
+            thisArg: any,
+            ...partials: any[]
+        ): TResult;
+
+        <TResult extends Function>(
             func: Function,
             thisArg: any,
-            ...args: any[]): (...args: any[]) => any;
+            ...partials: any[]
+        ): TResult;
+    }
+
+    interface LoDashStatic {
+        /**
+         * Creates a function that invokes func with the this binding of thisArg and prepends any additional _.bind
+         * arguments to those provided to the bound function.
+         *
+         * The _.bind.placeholder value, which defaults to _ in monolithic builds, may be used as a placeholder for
+         * partially applied arguments.
+         *
+         * Note: Unlike native Function#bind this method does not set the "length" property of bound functions.
+         *
+         * @param func The function to bind.
+         * @param thisArg The this binding of func.
+         * @param partials The arguments to be partially applied.
+         * @return Returns the new bound function.
+         */
+        bind: FunctionBind;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
-        * @see _.bind
-        **/
-        bind(
+         * @see _.bind
+         */
+        bind<TResult extends Function>(
             thisArg: any,
-            ...args: any[]): LoDashImplicitObjectWrapper<(...args: any[]) => any>;
+            ...partials: any[]
+        ): LoDashImplicitObjectWrapper<TResult>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.bind
+         */
+        bind<TResult extends Function>(
+            thisArg: any,
+            ...partials: any[]
+        ): LoDashExplicitObjectWrapper<TResult>;
     }
 
     //_.bindAll
     interface LoDashStatic {
         /**
-        * Binds methods of an object to the object itself, overwriting the existing method. Method
-        * names may be specified as individual arguments or as arrays of method names. If no method
-        * names are provided all the function properties of object will be bound.
-        * @param object The object to bind and assign the bound methods to.
-        * @param methodNames The object method names to bind, specified as individual method names
-        * or arrays of method names.
-        * @return object
-        **/
+         * Binds methods of an object to the object itself, overwriting the existing method. Method names may be
+         * specified as individual arguments or as arrays of method names. If no method names are provided all
+         * enumerable function properties, own and inherited, of object are bound.
+         *
+         * Note: This method does not set the "length" property of bound functions.
+         *
+         * @param object The object to bind and assign the bound methods to.
+         * @param methodNames The object method names to bind, specified as individual method names or arrays of
+         * method names.
+         * @return Returns object.
+         */
         bindAll<T>(
             object: T,
-            ...methodNames: string[]): T;
+            ...methodNames: (string|string[])[]
+        ): T;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
-        * @see _.bindAll
-        **/
-        bindAll(...methodNames: string[]): LoDashImplicitWrapper<T>;
+         * @see _.bindAll
+         */
+        bindAll(...methodNames: (string|string[])[]): LoDashImplicitObjectWrapper<T>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.bindAll
+         */
+        bindAll(...methodNames: (string|string[])[]): LoDashExplicitObjectWrapper<T>;
     }
 
     //_.bindKey
+    interface FunctionBindKey {
+        placeholder: any;
+
+        <T extends Object, TResult extends Function>(
+            object: T,
+            key: any,
+            ...partials: any[]
+        ): TResult;
+
+        <TResult extends Function>(
+            object: Object,
+            key: any,
+            ...partials: any[]
+        ): TResult;
+    }
+
     interface LoDashStatic {
         /**
-        * Creates a function that, when called, invokes the method at object[key] and prepends any
-        * additional bindKey arguments to those provided to the bound function. This method differs
-        * from _.bind by allowing bound functions to reference methods that will be redefined or don't
-        * yet exist. See http://michaux.ca/articles/lazy-function-definition-pattern.
-        * @param object The object the method belongs to.
-        * @param key The key of the method.
-        * @param args Arguments to be partially applied.
-        * @return The new bound function.
-        **/
-        bindKey<T>(
-            object: T,
-            key: string,
-            ...args: any[]): Function;
+         * Creates a function that invokes the method at object[key] and prepends any additional _.bindKey arguments
+         * to those provided to the bound function.
+         *
+         * This method differs from _.bind by allowing bound functions to reference methods that may be redefined
+         * or don’t yet exist. See Peter Michaux’s article for more details.
+         *
+         * The _.bindKey.placeholder value, which defaults to _ in monolithic builds, may be used as a placeholder
+         * for partially applied arguments.
+         *
+         * @param object The object the method belongs to.
+         * @param key The key of the method.
+         * @param partials The arguments to be partially applied.
+         * @return Returns the new bound function.
+         */
+        bindKey: FunctionBindKey;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
-        * @see _.bindKey
-        **/
-        bindKey(
-            key: string,
-            ...args: any[]): LoDashImplicitObjectWrapper<Function>;
+         * @see _.bindKey
+         */
+        bindKey<TResult extends Function>(
+            key: any,
+            ...partials: any[]
+        ): LoDashImplicitObjectWrapper<TResult>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.bindKey
+         */
+        bindKey<TResult extends Function>(
+            key: any,
+            ...partials: any[]
+        ): LoDashExplicitObjectWrapper<TResult>;
     }
 
     //_.compose
@@ -8582,16 +9603,17 @@ declare module _ {
          * @param resolver The function to resolve the cache key.
          * @return Returns the new memoizing function.
          */
-        memoize<TResult extends MemoizedFunction>(
-            func: Function,
-            resolver?: Function): TResult;
+        memoize: {
+            <T extends Function>(func: T, resolver?: Function): T & MemoizedFunction;
+            Cache: MapCache;
+        }
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.memoize
          */
-        memoize<TResult extends MemoizedFunction>(resolver?: Function): LoDashImplicitObjectWrapper<TResult>;
+        memoize(resolver?: Function): LoDashImplicitObjectWrapper<T & MemoizedFunction>;
     }
 
     //_.modArgs
@@ -8909,19 +9931,33 @@ declare module _ {
         /**
          * Creates a function that invokes func with the this binding of the created function and an array of arguments
          * much like Function#apply.
+         *
+         * Note: This method is based on the spread operator.
+         *
          * @param func The function to spread arguments over.
          * @return Returns the new function.
          */
-        spread<TResult extends Function>(func: Function): TResult;
+        spread<F extends Function, T extends Function>(func: F): T;
+
+        /**
+         * @see _.spread
+         */
+        spread<T extends Function>(func: Function): T;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.spread
          */
-        spread<TResult extends Function>(): LoDashImplicitObjectWrapper<TResult>;
+        spread<T extends Function>(): LoDashImplicitObjectWrapper<T>;
     }
 
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.spread
+         */
+        spread<T extends Function>(): LoDashExplicitObjectWrapper<T>;
+    }
 
     //_.throttle
     interface ThrottleSettings {
@@ -8983,16 +10019,106 @@ declare module _ {
     //_.wrap
     interface LoDashStatic {
         /**
-        * Creates a function that provides value to the wrapper function as its first argument.
-        * Additional arguments provided to the function are appended to those provided to the
-        * wrapper function. The wrapper is executed with the this binding of the created function.
-        * @param value The value to wrap.
-        * @param wrapper The wrapper function.
-        * @return The new function.
-        **/
-        wrap(
+         * Creates a function that provides value to the wrapper function as its first argument. Any additional
+         * arguments provided to the function are appended to those provided to the wrapper function. The wrapper is
+         * invoked with the this binding of the created function.
+         *
+         * @param value The value to wrap.
+         * @param wrapper The wrapper function.
+         * @return Returns the new function.
+         */
+        wrap<V, W extends Function, R extends Function>(
+            value: V,
+            wrapper: W
+        ): R;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<V, R extends Function>(
+            value: V,
+            wrapper: Function
+        ): R;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(
             value: any,
-            wrapper: (func: Function, ...args: any[]) => any): Function;
+            wrapper: Function
+        ): R;
+    }
+
+    interface LoDashImplicitWrapper<T> {
+        /**
+         * @see _.wrap
+         */
+        wrap<W extends Function, R extends Function>(wrapper: W): LoDashImplicitObjectWrapper<R>;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(wrapper: Function): LoDashImplicitObjectWrapper<R>;
+    }
+
+    interface LoDashImplicitArrayWrapper<T> {
+        /**
+         * @see _.wrap
+         */
+        wrap<W extends Function, R extends Function>(wrapper: W): LoDashImplicitObjectWrapper<R>;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(wrapper: Function): LoDashImplicitObjectWrapper<R>;
+    }
+
+    interface LoDashImplicitObjectWrapper<T> {
+        /**
+         * @see _.wrap
+         */
+        wrap<W extends Function, R extends Function>(wrapper: W): LoDashImplicitObjectWrapper<R>;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(wrapper: Function): LoDashImplicitObjectWrapper<R>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.wrap
+         */
+        wrap<W extends Function, R extends Function>(wrapper: W): LoDashExplicitObjectWrapper<R>;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(wrapper: Function): LoDashExplicitObjectWrapper<R>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.wrap
+         */
+        wrap<W extends Function, R extends Function>(wrapper: W): LoDashExplicitObjectWrapper<R>;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(wrapper: Function): LoDashExplicitObjectWrapper<R>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.wrap
+         */
+        wrap<W extends Function, R extends Function>(wrapper: W): LoDashExplicitObjectWrapper<R>;
+
+        /**
+         * @see _.wrap
+         */
+        wrap<R extends Function>(wrapper: Function): LoDashExplicitObjectWrapper<R>;
     }
 
     /********
@@ -9225,6 +10351,7 @@ declare module _ {
     interface LoDashStatic {
         /**
          * Checks if value is classified as an arguments object.
+         *
          * @param value The value to check.
          * @return Returns true if value is correctly classified, else false.
          */
@@ -9238,14 +10365,22 @@ declare module _ {
         isArguments(): boolean;
     }
 
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * @see _.isArguments
+         */
+        isArguments(): LoDashExplicitWrapper<boolean>;
+    }
+
     //_.isArray
     interface LoDashStatic {
         /**
          * Checks if value is classified as an Array object.
          * @param value The value to check.
+         *
          * @return Returns true if value is correctly classified, else false.
-         **/
-        isArray(value?: any): value is any[];
+         */
+        isArray<T>(value?: any): value is T[];
     }
 
     interface LoDashImplicitWrapperBase<T,TWrapper> {
@@ -9253,6 +10388,13 @@ declare module _ {
          * @see _.isArray
          */
         isArray(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T,TWrapper> {
+        /**
+         * @see _.isArray
+         */
+        isArray(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isBoolean
@@ -9335,17 +10477,25 @@ declare module _ {
         /**
          * Checks if value is empty. A value is considered empty unless it’s an arguments object, array, string, or
          * jQuery-like collection with a length greater than 0 or an object with own enumerable properties.
+         *
          * @param value The value to inspect.
          * @return Returns true if value is empty, else false.
-         **/
-        isEmpty(value?: any[]|Dictionary<any>|string|any): boolean;
+         */
+        isEmpty(value?: any): boolean;
     }
 
-    interface LoDashImplicitWrapperBase<T,TWrapper> {
+    interface LoDashImplicitWrapperBase<T, TWrapper> {
         /**
          * @see _.isEmpty
          */
         isEmpty(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * @see _.isEmpty
+         */
+        isEmpty(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isEqual
@@ -9407,6 +10557,7 @@ declare module _ {
         /**
          * Checks if value is an Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, or URIError
          * object.
+         *
          * @param value The value to check.
          * @return Returns true if value is an error object, else false.
          */
@@ -9420,15 +10571,24 @@ declare module _ {
         isError(): boolean;
     }
 
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * @see _.isError
+         */
+        isError(): LoDashExplicitWrapper<boolean>;
+    }
+
     //_.isFinite
     interface LoDashStatic {
         /**
          * Checks if value is a finite primitive number.
+         *
          * Note: This method is based on Number.isFinite.
+         *
          * @param value The value to check.
          * @return Returns true if value is a finite number, else false.
-         **/
-        isFinite(value?: any): value is number;
+         */
+        isFinite(value?: any): boolean;
     }
 
     interface LoDashImplicitWrapperBase<T, TWrapper> {
@@ -9436,6 +10596,13 @@ declare module _ {
          * @see _.isFinite
          */
         isFinite(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * @see _.isFinite
+         */
+        isFinite(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isFunction
@@ -9522,6 +10689,7 @@ declare module _ {
         /**
          * Checks if value is a native function.
          * @param value The value to check.
+         *
          * @retrun Returns true if value is a native function, else false.
          */
         isNative(value: any): value is Function;
@@ -9532,6 +10700,13 @@ declare module _ {
          * see _.isNative
          */
         isNative(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * see _.isNative
+         */
+        isNative(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isNull
@@ -9563,7 +10738,9 @@ declare module _ {
     interface LoDashStatic {
         /**
          * Checks if value is classified as a Number primitive or object.
+         *
          * Note: To exclude Infinity, -Infinity, and NaN, which are classified as numbers, use the _.isFinite method.
+         *
          * @param value The value to check.
          * @return Returns true if value is correctly classified, else false.
          */
@@ -9577,14 +10754,22 @@ declare module _ {
         isNumber(): boolean;
     }
 
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * see _.isNumber
+         */
+        isNumber(): LoDashExplicitWrapper<boolean>;
+    }
+
     //_.isObject
     interface LoDashStatic {
         /**
          * Checks if value is the language type of Object. (e.g. arrays, functions, objects, regexes, new Number(0),
          * and new String(''))
+         *
          * @param value The value to check.
          * @return Returns true if value is an object, else false.
-         **/
+         */
         isObject(value?: any): boolean;
     }
 
@@ -9593,6 +10778,13 @@ declare module _ {
          * see _.isObject
          */
         isObject(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * see _.isObject
+         */
+        isObject(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isPlainObject
@@ -9614,6 +10806,13 @@ declare module _ {
          * see _.isPlainObject
          */
         isPlainObject(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * see _.isPlainObject
+         */
+        isPlainObject(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isRegExp
@@ -9645,9 +10844,10 @@ declare module _ {
     interface LoDashStatic {
         /**
          * Checks if value is classified as a String primitive or object.
+         *
          * @param value The value to check.
          * @return Returns true if value is correctly classified, else false.
-         **/
+         */
         isString(value?: any): value is string;
     }
 
@@ -9656,6 +10856,13 @@ declare module _ {
          * see _.isString
          */
         isString(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * see _.isString
+         */
+        isString(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.isTypedArray
@@ -9687,9 +10894,10 @@ declare module _ {
     interface LoDashStatic {
         /**
          * Checks if value is undefined.
+         *
          * @param value The value to check.
          * @return Returns true if value is undefined, else false.
-         **/
+         */
         isUndefined(value: any): boolean;
     }
 
@@ -9698,6 +10906,13 @@ declare module _ {
          * see _.isUndefined
          */
         isUndefined(): boolean;
+    }
+
+    interface LoDashExplicitWrapperBase<T, TWrapper> {
+        /**
+         * see _.isUndefined
+         */
+        isUndefined(): LoDashExplicitWrapper<boolean>;
     }
 
     //_.lt
@@ -9766,12 +10981,7 @@ declare module _ {
          * @param value The value to convert.
          * @return Returns the converted array.
          */
-        toArray(value: string): string[];
-
-        /**
-         * @see _.toArray
-         */
-        toArray<T>(value: List<T>|Dictionary<T>): T[];
+        toArray<T>(value: List<T>|Dictionary<T>|NumericDictionary<T>): T[];
 
         /**
          * @see _.toArray
@@ -9781,12 +10991,7 @@ declare module _ {
         /**
          * @see _.toArray
          */
-        toArray<TValue>(value: TValue): any[];
-
-        /**
-         * @see _.toArray
-         */
-        toArray(value?: any): any[];
+        toArray<TResult>(value?: any): TResult[];
     }
 
     interface LoDashImplicitWrapper<T> {
@@ -9808,6 +11013,27 @@ declare module _ {
          * @see _.toArray
          */
         toArray<TResult>(): LoDashImplicitArrayWrapper<TResult>;
+    }
+
+    interface LoDashExplicitWrapper<T> {
+        /**
+         * @see _.toArray
+         */
+        toArray<TResult>(): LoDashExplicitArrayWrapper<TResult>;
+    }
+
+    interface LoDashExplicitArrayWrapper<T> {
+        /**
+         * @see _.toArray
+         */
+        toArray(): LoDashExplicitArrayWrapper<T>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.toArray
+         */
+        toArray<TResult>(): LoDashExplicitArrayWrapper<TResult>;
     }
 
     //_.toPlainObject
@@ -10601,18 +11827,29 @@ declare module _ {
         /**
          * Creates an object that inherits from the given prototype object. If a properties object is provided its own
          * enumerable properties are assigned to the created object.
+         *
          * @param prototype The object to inherit from.
          * @param properties The properties to assign to the object.
          * @return Returns the new object.
          */
-        create<TResult extends {}>(prototype: Object, properties?: Object): TResult;
+        create<T extends Object, U extends Object>(
+            prototype: T,
+            properties?: U
+        ): T & U;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.create
          */
-        create<TResult extends {}>(properties?: Object): LoDashImplicitObjectWrapper<TResult>;
+        create<U extends Object>(properties?: U): LoDashImplicitObjectWrapper<T & U>;
+    }
+
+    interface LoDashExplicitObjectWrapper<T> {
+        /**
+         * @see _.create
+         */
+        create<U extends Object>(properties?: U): LoDashExplicitObjectWrapper<T & U>;
     }
 
     //_.defaults
@@ -11793,40 +13030,40 @@ declare module _ {
          * @param thisArg The this binding of customizer.
          * @return Returns object.
          */
-        merge<TObject, TSource, TResult>(
+        merge<TObject, TSource>(
             object: TObject,
             source: TSource,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): TResult;
+        ): TObject & TSource;
 
         /**
          * @see _.merge
          */
-        merge<TObject, TSource1, TSource2, TResult>(
+        merge<TObject, TSource1, TSource2>(
             object: TObject,
             source1: TSource1,
             source2: TSource2,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): TResult;
+        ): TObject & TSource1 & TSource2;
 
         /**
          * @see _.merge
          */
-        merge<TObject, TSource1, TSource2, TSource3, TResult>(
+        merge<TObject, TSource1, TSource2, TSource3>(
             object: TObject,
             source1: TSource1,
             source2: TSource2,
             source3: TSource3,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): TResult;
+        ): TObject & TSource1 & TSource2 & TSource3;
 
         /**
          * @see _.merge
          */
-        merge<TObject, TSource1, TSource2, TSource3, TSource4, TResult>(
+        merge<TObject, TSource1, TSource2, TSource3, TSource4>(
             object: TObject,
             source1: TSource1,
             source2: TSource2,
@@ -11834,13 +13071,13 @@ declare module _ {
             source4: TSource4,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): TResult;
+        ): TObject & TSource1 & TSource2 & TSource3 & TSource4;
 
         /**
          * @see _.merge
          */
-        merge<TObject, TResult>(
-            object: TObject,
+        merge<TResult>(
+            object: any,
             ...otherArgs: any[]
         ): TResult;
     }
@@ -11849,44 +13086,44 @@ declare module _ {
         /**
          * @see _.merge
          */
-        merge<TSource, TResult>(
+        merge<TSource>(
             source: TSource,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): LoDashImplicitObjectWrapper<TResult>;
+        ): LoDashImplicitObjectWrapper<T & TSource>;
 
         /**
          * @see _.merge
          */
-        merge<TSource1, TSource2, TResult>(
+        merge<TSource1, TSource2>(
             source1: TSource1,
             source2: TSource2,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): LoDashImplicitObjectWrapper<TResult>;
+        ): LoDashImplicitObjectWrapper<T & TSource1 & TSource2>;
 
         /**
          * @see _.merge
          */
-        merge<TSource1, TSource2, TSource3, TResult>(
+        merge<TSource1, TSource2, TSource3>(
             source1: TSource1,
             source2: TSource2,
             source3: TSource3,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): LoDashImplicitObjectWrapper<TResult>;
+        ): LoDashImplicitObjectWrapper<T & TSource1 & TSource2 & TSource3>;
 
         /**
          * @see _.merge
          */
-        merge<TSource1, TSource2, TSource3, TSource4, TResult>(
+        merge<TSource1, TSource2, TSource3, TSource4>(
             source1: TSource1,
             source2: TSource2,
             source3: TSource3,
             source4: TSource4,
             customizer?: MergeCustomizer,
             thisArg?: any
-        ): LoDashImplicitObjectWrapper<TResult>;
+        ): LoDashImplicitObjectWrapper<T & TSource1 & TSource2 & TSource3 & TSource4>;
 
         /**
          * @see _.merge
@@ -12107,40 +13344,65 @@ declare module _ {
          * @param value The value to set.
          * @return Returns object.
          */
-        set<T>(
-            object: T,
+        set<TResult>(
+            object: Object,
             path: StringRepresentable|StringRepresentable[],
             value: any
-        ): T;
+        ): TResult;
 
         /**
          * @see _.set
          */
-        set<V, T>(
-            object: T,
+        set<V, TResult>(
+            object: Object,
             path: StringRepresentable|StringRepresentable[],
             value: V
-        ): T;
+        ): TResult;
+
+        /**
+         * @see _.set
+         */
+        set<O, V, TResult>(
+            object: O,
+            path: StringRepresentable|StringRepresentable[],
+            value: V
+        ): TResult;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.set
          */
-        set<V>(
+        set<TResult>(
+            path: StringRepresentable|StringRepresentable[],
+            value: any
+        ): LoDashImplicitObjectWrapper<TResult>;
+
+        /**
+         * @see _.set
+         */
+        set<V, TResult>(
             path: StringRepresentable|StringRepresentable[],
             value: V
-        ): LoDashImplicitObjectWrapper<T>;
+        ): LoDashImplicitObjectWrapper<TResult>;
     }
 
     interface LoDashExplicitObjectWrapper<T> {
         /**
          * @see _.set
          */
-        set<V>(
+        set<TResult>(
+            path: StringRepresentable|StringRepresentable[],
+            value: any
+        ): LoDashExplicitObjectWrapper<TResult>;
+
+        /**
+         * @see _.set
+         */
+        set<V, TResult>(
             path: StringRepresentable|StringRepresentable[],
             value: V
-        ): LoDashExplicitObjectWrapper<T>;
+        ): LoDashExplicitObjectWrapper<TResult>;
     }
 
     //_.transform
@@ -12999,21 +14261,21 @@ declare module _ {
          * @param func The function to attempt.
          * @return Returns the func result or error object.
          */
-        attempt<TResult>(func: (...args: any[]) => TResult): TResult|Error;
+        attempt<TResult>(func: (...args: any[]) => TResult, ...args: any[]): TResult|Error;
     }
 
     interface LoDashImplicitObjectWrapper<T> {
         /**
          * @see _.attempt
          */
-        attempt<TResult>(): TResult|Error;
+        attempt<TResult>(...args: any[]): TResult|Error;
     }
 
     interface LoDashExplicitObjectWrapper<T> {
         /**
          * @see _.attempt
          */
-        attempt<TResult>(): LoDashExplicitObjectWrapper<TResult|Error>;
+        attempt<TResult>(...args: any[]): LoDashExplicitObjectWrapper<TResult|Error>;
     }
 
     //_.callback
@@ -13751,6 +15013,10 @@ declare module _ {
         (value: T, key?: string, collection?: Dictionary<T>): TResult;
     }
 
+    interface NumericDictionaryIterator<T, TResult> {
+        (value: T, key?: number, collection?: Dictionary<T>): TResult;
+    }
+
     interface ObjectIterator<T, TResult> {
         (element: T, key?: string, collection?: any): TResult;
     }
@@ -13783,6 +15049,10 @@ declare module _ {
 
     interface Dictionary<T> {
         [index: string]: T;
+    }
+
+    interface NumericDictionary<T> {
+        [index: number]: T;
     }
 
     interface StringRepresentable {

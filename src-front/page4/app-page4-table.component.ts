@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges} from 'angular2/core';
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 
 const COMPONENT_SELECTOR = 'my-complicated-table';
 const TARGET_PAGE = 'target-page';
@@ -47,7 +47,7 @@ export class AppPage4Table implements OnChanges {
 
   ngOnChanges() {
     this.columnsRange = lodash.range(0, this.fields.length);
-    this.totalPages = Math.floor(this.totalItems / this.itemsPerPage) + 1
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     this.pagesRange = lodash.range(1, this.totalPages + 1);
   }
 

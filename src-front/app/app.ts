@@ -1,9 +1,9 @@
-import {Component} from 'angular2/core'
-import {Router, Route, RouteConfig, ROUTER_DIRECTIVES, Location} from 'angular2/router'
-import {AppPage1} from '../page1/app-page1.component'
-import {AppPage2} from '../page2/app-page2.component'
-import {AppPage3} from '../page3/app-page3.component'
-import {AppPage4} from '../page4/app-page4.component'
+import {Component} from 'angular2/core';
+import {Router, Route, RouteConfig, ROUTER_DIRECTIVES, Location} from 'angular2/router';
+import {AppPage1} from '../page1/app-page1.component';
+import {AppPage2} from '../page2/app-page2.component';
+import {AppPage3} from '../page3/app-page3.component';
+import {AppPage4} from '../page4/app-page4.component';
 
 const COMPONENT_SELECTOR = 'my-app'
 @Component({

@@ -1,4 +1,4 @@
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 const flatten = require('flat');
 const Router = require('falcor-router');
 import {deserializeQueryJsonForFalcor} from '../src-front/app/falcor-json-serializer';
@@ -80,7 +80,7 @@ routes.push({
           });
         });
     }
-    console.log('falcor route result: ' + JSON.stringify(results));
+    //console.log('falcor route result: ' + JSON.stringify(results)); // コンソールが見にくくなるのでコメントアウト。
     return results;
   }
 });
@@ -110,7 +110,7 @@ routes.push({
               fields.forEach(field => {
                 let value: any;
                 if (field.indexOf(',') > -1) {
-                  const joinableArray = lodash.reduce(field.split(','), (result, fieldChild) => {
+                  const joinableArray = field.split(',').reduce((result, fieldChild) => {
                     result.push(flattenRes[lodash.trim(fieldChild)]);
                     return result;
                   }, []);
@@ -131,7 +131,7 @@ routes.push({
       path: [queryName, queryJson, lodash.min(range), 'totalItems'], // totalItemsプロパティに…
       value: totalItems // 検索されたドキュメントがいくつあったか代入する。
     });
-    console.log('falcor route result: ' + JSON.stringify(results));
+    //console.log('falcor route result: ' + JSON.stringify(results)); // コンソールが見にくくなるのでコメントアウト。
     return results;
   }
 });

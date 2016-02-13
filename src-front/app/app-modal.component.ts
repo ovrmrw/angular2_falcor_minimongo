@@ -1,4 +1,4 @@
-import {Component, Input} from 'angular2/core'
+import {Component, Input} from 'angular2/core';
 
 const COMPONENT_SELECTOR = 'my-modal'
 @Component({

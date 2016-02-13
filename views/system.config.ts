@@ -14,7 +14,7 @@ System.config({
     'babel-polyfill': 'node:babel-polyfill/dist/polyfill.min.js', // async/awaitに必要。
     //'numeral': 'node:numeral/min/numeral.min.js',
     //'moment': 'node:moment/min/moment.min.js',
-    'lodash': 'node:lodash/index.js',
+    'lodash': 'node:lodash/lodash.js',
     'flat': 'node:flat/index.js',
     'falcor': 'node:falcor/dist/falcor.browser.min.js',
   },

@@ -1,8 +1,9 @@
-import {Component, OnInit} from 'angular2/core'
-import {Observable} from 'rxjs/Observable'
-import {AppPageParent} from '../app/app-page-parent'
-import {AppModal} from '../app/app-modal.component'
-import lodash from 'lodash'
+import {Component, OnInit} from 'angular2/core';
+import {Observable} from 'rxjs/Observable';
+import {AppPageParent} from '../app/app-page-parent';
+import {AppModal} from '../app/app-modal.component';
+import {getValueFromJsonGraph} from '../app/falcor-utils';
+import * as lodash from 'lodash';
 const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
@@ -39,7 +40,7 @@ export class AppPage2 extends AppPageParent implements OnInit {
 
   nowByObservable: number; // Observableイベントハンドラによって値が代入される。
   messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
-  
+
   // ページ遷移で入る度に呼び出される。
   constructor() {
     super(COMPONENT_SELECTOR);
@@ -79,18 +80,18 @@ export class AppPage2 extends AppPageParent implements OnInit {
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(keyword: string) {
     const queryName = 'query2';
-    
+
     this.model // this.modelは親クラスで定義されている。
       .get([queryName, keyword])
       .then(jsonGraph => {
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.messageByFalcor = jsonGraph ? jsonGraph.json[queryName][keyword] : '?????';
+        this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, keyword], '?????');
       });
   }
   loadJsonGraph() {
     this.getJsonGraph(this.keyword);
   }
-  
+
   // ここからモーダルウインドウのテキスト。
   modalTexts = [
     'Page2ではKeyword欄に文字を入力するとFalcorのクエリが発行されて画面のメッセージが更新されます。いわゆるFalcor版Hello Worldですね。',

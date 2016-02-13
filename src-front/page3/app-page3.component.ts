@@ -1,8 +1,9 @@
-import {Component, OnInit} from 'angular2/core'
-import {Observable} from 'rxjs/Observable'
-import {AppPageParent} from '../app/app-page-parent'
-import {AppModal} from '../app/app-modal.component'
-import lodash from 'lodash'
+import {Component, OnInit} from 'angular2/core';
+import {Observable} from 'rxjs/Observable';
+import {AppPageParent} from '../app/app-page-parent';
+import {AppModal} from '../app/app-modal.component';
+import {toArrayByFalcorKeys} from '../app/falcor-utils';
+import * as lodash from 'lodash';
 const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
@@ -55,10 +56,10 @@ export class AppPage3 extends AppPageParent implements OnInit {
   set searchWord(word: string) { AppPage3._searchWord = word; }
 
   nowByObservable: number; // Observableイベントハンドラによって値が代入される。
-  
+
   // ページ遷移で入る度に呼び出される。
   constructor() {
-    super(componentSelector);    
+    super(componentSelector);
   }
   ngOnInit() {
     super.ngOnInit();
@@ -92,26 +93,26 @@ export class AppPage3 extends AppPageParent implements OnInit {
   }
 
   documentsByFalcor: any[]; // loadJsonGraph()のクエリ結果を格納する。
-  itemsPerPage: number = 10;  
-  
+  itemsPerPage: number = 10;
+
   // ここからFalcorのコード。
   collection = 'names';
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(keyword: string, itemsPerPage: number) {
     const queryName = 'query3';
-    
+
     this.model // this.modelは親クラスで定義されている。
       .get([queryName, this.collection, keyword, { from: 0, length: itemsPerPage }, ['name.first', 'name.last', 'gender', 'birthday']])
       .then(jsonGraph => {
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[queryName][this.collection][keyword]) : [];
+        this.documentsByFalcor = toArrayByFalcorKeys(jsonGraph, ['json', queryName, this.collection, keyword], []);
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
       });
   }
   loadJsonGraph() {
     this.getJsonGraph(this.searchWord, this.itemsPerPage);
   }
-  
+
   // ここからモーダルウインドウのテキスト。
   modalTexts = [
     'Search Word欄に文字を入力するとFalcorの検索クエリが発行され、"name.first"プロパティで絞り込みをします。正規表現で入力できます。',
@@ -119,7 +120,7 @@ export class AppPage3 extends AppPageParent implements OnInit {
     'Search Wordを入力して1秒経過すると検索が実行されます。この時間をもう少し長くしたり短くしたりすることはできますか？',
     '検索対象がたくさんあったとしても10件までしか取得しません。この件数をもっと増やすことはできますか？',
     'コンソールをよく観察してください。まるで "そういう構造のJSON" がそこにあって、それをただ引っ張ってきているだけのようではないですか？',
-    '実際にはFalcorがクエリを受け取ってからルート定義の中で "そういう構造のJSON" を構築して返却しているのです。',   
+    '実際にはFalcorがクエリを受け取ってからルート定義の中で "そういう構造のJSON" を構築して返却しているのです。',
     '"name.first"プロパティではなく他のプロパティ、例えば"gender"で絞り込みをするにはソースコードのどこを変更すれば良いかわかりますか？少なくとも app-page3.component.ts ではありません。',
     'このテンプレートのテーブル定義(app-page3.component.ts)を見てください。少し変更するだけでもかなりの作業が必要になりますね。どう改善すれば良いかわかりますか？ Page4ではこの問題の解決に取り組んでいます。',
   ];

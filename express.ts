@@ -1,6 +1,6 @@
 import 'babel-polyfill';
-import lodash from 'lodash';
-import express from 'express';
+import * as lodash from 'lodash';
+import express from 'express'; // import * as express と書くと実行時にエラーになる。
 const falcorExpress = require('falcor-express');
 import {MinimongoFalcorRouter} from './src-server/minimongo-falcor-router';
 

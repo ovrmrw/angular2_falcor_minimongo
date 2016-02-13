@@ -3,7 +3,8 @@ import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppPage4Table} from './app-page4-table.component';
 import {AppModal} from '../app/app-modal.component';
-import lodash from 'lodash';
+import {toArrayByFalcorKeys, getValueFromJsonGraph} from '../app/falcor-utils';
+import * as lodash from 'lodash';
 const falcor = require('falcor');
 import {serializeQueryObjectForFalcor} from '../app/falcor-json-serializer';
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
@@ -46,10 +47,10 @@ export class AppPage4 extends AppPageParent implements OnInit {
   set searchWord(word: string) { AppPage4._searchWord = word; }
 
   nowByObservable: number; // Observableイベントハンドラによって値が代入される。
-  
+
   // ページ遷移で入る度に呼び出される。
   constructor() {
-    super(COMPONENT_SELECTOR);    
+    super(COMPONENT_SELECTOR);
   }
   ngOnInit() {
     super.ngOnInit();
@@ -80,7 +81,7 @@ export class AppPage4 extends AppPageParent implements OnInit {
         this.currentPageByObservable = targetPage;
         this.loadJsonGraph();
       });
-      
+
     this.disposableSubscription = Observable.fromEvent<MouseEvent>(document.getElementsByTagName(COMPONENT_SELECTOR), 'click')
       .map(event => event.target.textContent)
       .filter(text => text.trim().length > 0)
@@ -101,8 +102,8 @@ export class AppPage4 extends AppPageParent implements OnInit {
   documentsByFalcor: any[]; // loadJsonGraph()のクエリ結果を格納する。
   totalItemsByFalcor: number = 0; // loadJsonGraph()のクエリ結果を格納する。
   currentPageByObservable: number = 1; // Observableイベントハンドラによって値が代入される。
-  itemsPerPage: number = 10;  
-  
+  itemsPerPage: number = 10;
+
   // ここからFalcorのコード。
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
   getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
@@ -110,22 +111,30 @@ export class AppPage4 extends AppPageParent implements OnInit {
     const queryJson = serializeQueryObjectForFalcor<QueryParamsForQuery4>({
       collection: 'names',
       condition: condition,
-      keyword: keyword     
+      keyword: keyword
     });
-    
+
     this.model // this.modelは親クラスで定義されている。
-      .get([queryName, queryJson, { from: from, length: length }, this.fields.concat('totalItems')])
+      .get([queryName, queryJson, { from: from, length: length }, [...this.fields, 'totalItems']])
       .then(jsonGraph => {
-        console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.documentsByFalcor = jsonGraph ? lodash.toArray(jsonGraph.json[queryName][queryJson]) : [];
-        this.totalItemsByFalcor = jsonGraph ? jsonGraph.json[queryName][queryJson][from]['totalItems'] : 0;
+        console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。        
+        this.documentsByFalcor = toArrayByFalcorKeys(jsonGraph, ['json', queryName, queryJson], []);
+        this.totalItemsByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, queryJson, from, 'totalItems'], 0);
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
+
+        // 次のページがある場合はプリロードしてキャッシュしておく。これにより次のページに遷移したときはキャッシュから読み込まれる。
+        // この例ではわかりやすくするため敢えて1ページ目を表示したときだけ2ページ目のプリロードをする。(from === 0を外せば2ページ目以降もプリロードが動く)
+        if (from === 0 && this.totalItemsByFalcor > from + length) {
+          this.model
+            .get([queryName, queryJson, { from: from + length, length: length }, [...this.fields, 'totalItems']])
+            .then(() => { });
+        }
       });
   }
   loadJsonGraph() {
     this.getJsonGraph(this.condition, this.searchWord, (this.currentPageByObservable - 1) * this.itemsPerPage, this.itemsPerPage);
   }
-  
+
   // ここからモーダルウインドウのテキスト。
   modalTexts = [
     'Search Word欄に文字を入力するとFalcorの検索クエリが発行されます。正規表現で入力できます。',
@@ -137,11 +146,12 @@ export class AppPage4 extends AppPageParent implements OnInit {
     '例えば 男性 だけを検索したい場合、どうすればいいかわかりますか？',
     '(正規表現で入力できるということを思い出してください)',
     'ブラウザの表示は更新されているのにサーバーサイドのコンソールは更新されないときがありますね。どういうときですか？',
+    '2ページ目を表示したとき、サーバーサイドのコンソールは更新されません。なぜでしょうか？',
     'テーブルとページネーションのコンポーネント定義は app-page4-table.component.ts に書いてあります。',
     'my-complicated-tableタグのコードは理解が難しいかもしれませんが、一度わかると実に合理的な処理をしていることが読み取れると思います。',
     '1ページに表示される件数を100件や1000件に増やすことはできますか？',
     'aliases という変数が app-page4.component.ts の中にあります。これは何のためにありますか？これが全てnullだと表示結果はどう変わりますか？',
     'aligns という変数が app-page4.component.ts の中にあります。これは何のためにありますか？これが全てnullだと表示結果はどう変わりますか？',
-    '例えば テーブルに"趣味の列"を追加したいとき、ソースコードのどこを変更すれば良いかわかりますか？'
+    '例えば テーブルに"趣味の列"を追加したいとき、ソースコードのどこを変更すれば良いかわかりますか？',    
   ];
 }
