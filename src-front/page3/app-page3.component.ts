@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
 import {toArrayByFalcorKeys} from '../app/falcor-utils';
-import * as lodash from 'lodash';
+import lodash from 'lodash';
 const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み

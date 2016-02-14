@@ -1,7 +1,7 @@
-import * as lodash from 'lodash';
+import lodash from 'lodash';
+import fs from 'fs';
+import zlib from 'zlib';
 const minimongo = require("minimongo");
-import * as fs from 'fs';
-import * as zlib from 'zlib';
 
 require('dotenv').load();
 const gzippedJsonFile = String(process.env.DB_IMPORT_JSON).trim();

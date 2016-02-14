@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges} from 'angular2/core';
-import * as lodash from 'lodash';
+import lodash from 'lodash';
 
 const COMPONENT_SELECTOR = 'my-complicated-table';
 const TARGET_PAGE = 'target-page';

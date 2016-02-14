@@ -1,7 +1,7 @@
 import 'babel-polyfill';
-import * as lodash from 'lodash';
-import * as fs from 'fs';
-import * as path from 'path';
+import lodash from 'lodash';
+import fs from 'fs';
+import path from 'path';
 
 require('dotenv').load();
 const EXPRESS_ENV = String(process.env.EXPRESS_ENV).trim();

@@ -4,7 +4,7 @@ import {AppPageParent} from '../app/app-page-parent';
 import {AppPage4Table} from './app-page4-table.component';
 import {AppModal} from '../app/app-modal.component';
 import {toArrayByFalcorKeys, getValueFromJsonGraph} from '../app/falcor-utils';
-import * as lodash from 'lodash';
+import lodash from 'lodash';
 const falcor = require('falcor');
 import {serializeQueryObjectForFalcor} from '../app/falcor-json-serializer';
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
@@ -152,6 +152,6 @@ export class AppPage4 extends AppPageParent implements OnInit {
     '1ページに表示される件数を100件や1000件に増やすことはできますか？',
     'aliases という変数が app-page4.component.ts の中にあります。これは何のためにありますか？これが全てnullだと表示結果はどう変わりますか？',
     'aligns という変数が app-page4.component.ts の中にあります。これは何のためにありますか？これが全てnullだと表示結果はどう変わりますか？',
-    '例えば テーブルに"趣味の列"を追加したいとき、ソースコードのどこを変更すれば良いかわかりますか？',    
+    '例えば テーブルに"趣味の列"を追加したいとき、ソースコードのどこを変更すれば良いかわかりますか？',
   ];
 }

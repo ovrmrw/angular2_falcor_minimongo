@@ -4,7 +4,7 @@ const SHARP = '@SHARP@';
 const PERCENT = '@PERCENT@';
 
 // フロントエンドからサーバーサイドにJSONを渡すときにFalcor用にシリアライズする。
-function serializeQueryObjectForFalcor<T>(object: T): string {
+export function serializeQueryObjectForFalcor<T>(object: T): string {
   const json = JSON.stringify(object);
   let quotesReplacer = "`";
   while (json.indexOf(quotesReplacer) > -1) {
@@ -18,7 +18,7 @@ function serializeQueryObjectForFalcor<T>(object: T): string {
 }
 
 // サーバーサイドがフロントエンドからJSONを受け取ったときにJavaScriptオブジェクトにデシリアライズする。
-function deserializeQueryJsonForFalcor<T>(json: string): T {
+export function deserializeQueryJsonForFalcor<T>(json: string): T {
   const quotesReplacer = json.match(/^.*?{/)[0].slice(0, -1);
   const json2 = [[quotesReplacer, '"'], [PLUS, '+'], [AMPERSAND, '&'], [SHARP, '#'], [PERCENT, '%']].reduce((p, replacer) => {
     return p.replace(new RegExp(replacer[0], 'g'), replacer[1]);
@@ -26,5 +26,3 @@ function deserializeQueryJsonForFalcor<T>(json: string): T {
   console.log('deserialized query json: ' + json2);
   return JSON.parse(json2);
 }
-
-export {serializeQueryObjectForFalcor, deserializeQueryJsonForFalcor}

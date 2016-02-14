@@ -1,4 +1,4 @@
-import * as lodash from 'lodash';
+import lodash from 'lodash';
 const flatten = require('flat');
 const Router = require('falcor-router');
 import {deserializeQueryJsonForFalcor} from '../src-front/app/falcor-json-serializer';
@@ -136,5 +136,4 @@ routes.push({
   }
 });
 
-const MinimongoFalcorRouter = Router.createClass(routes);
-export {MinimongoFalcorRouter}
+export const MinimongoFalcorRouter = Router.createClass(routes);
