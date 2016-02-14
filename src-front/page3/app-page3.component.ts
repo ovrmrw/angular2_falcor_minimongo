@@ -2,7 +2,7 @@ import {Component, OnInit} from 'angular2/core';
 import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
-import {toArrayByFalcorKeys} from '../app/falcor-utils';
+import {getArrayFromJsonGraph} from '../app/falcor-utils';
 import lodash from 'lodash';
 const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
@@ -105,7 +105,7 @@ export class AppPage3 extends AppPageParent implements OnInit {
       .get([queryName, this.collection, keyword, { from: 0, length: itemsPerPage }, ['name.first', 'name.last', 'gender', 'birthday']])
       .then(jsonGraph => {
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.documentsByFalcor = toArrayByFalcorKeys(jsonGraph, ['json', queryName, this.collection, keyword], []);
+        this.documentsByFalcor = getArrayFromJsonGraph(jsonGraph, ['json', queryName, this.collection, keyword], []);
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
       });
   }

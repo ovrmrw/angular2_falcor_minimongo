@@ -111,7 +111,7 @@ routes.push({
                 let value: any;
                 if (field.indexOf(',') > -1) {
                   const joinableArray = field.split(',').reduce((result, fieldChild) => {
-                    result.push(flattenRes[lodash.trim(fieldChild)]);
+                    result.push(flattenRes[fieldChild.trim()]);
                     return result;
                   }, []);
                   value = joinableArray.join(', ');

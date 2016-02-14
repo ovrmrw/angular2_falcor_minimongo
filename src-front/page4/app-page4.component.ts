@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppPage4Table} from './app-page4-table.component';
 import {AppModal} from '../app/app-modal.component';
-import {toArrayByFalcorKeys, getValueFromJsonGraph} from '../app/falcor-utils';
+import {getArrayFromJsonGraph, getValueFromJsonGraph} from '../app/falcor-utils';
 import lodash from 'lodash';
 const falcor = require('falcor');
 import {serializeQueryObjectForFalcor} from '../app/falcor-json-serializer';
@@ -118,7 +118,7 @@ export class AppPage4 extends AppPageParent implements OnInit {
       .get([queryName, queryJson, { from: from, length: length }, [...this.fields, 'totalItems']])
       .then(jsonGraph => {
         console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。        
-        this.documentsByFalcor = toArrayByFalcorKeys(jsonGraph, ['json', queryName, queryJson], []);
+        this.documentsByFalcor = getArrayFromJsonGraph(jsonGraph, ['json', queryName, queryJson], []);
         this.totalItemsByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, queryJson, from, 'totalItems'], 0);
         console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
 
