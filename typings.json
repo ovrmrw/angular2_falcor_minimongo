@@ -1,13 +1,15 @@
 {
-  "dependencies": {},
-  "devDependencies": {},
+  "name": "angular2_falcor_minimongo",
+  "version": false,
+  "dependencies": {
+    "falcor": "registry:npm/falcor#0.1.0+20160427193439",
+    "falcor-express": "registry:npm/falcor-express#0.1.0+20160427202253",
+    "falcor-router": "registry:npm/falcor-router#0.4.0+20160427212252",
+    "lodash": "registry:npm/lodash#4.0.0+20160416211519"
+  },
   "ambientDependencies": {
-    "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#dd638012d63e069f2c99d06ef4dcc9616a943ee4",
-    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#fab0b336b0414fac23963bde83f7d7077f6cf14c",
-    "lodash": "github:DefinitelyTyped/DefinitelyTyped/lodash/lodash-3.10.d.ts#86dbea8fc37d9473fee465da4f0a21bea4f8cbd9",
-    "mime": "github:DefinitelyTyped/DefinitelyTyped/mime/mime.d.ts#cb5206a8ac1c9a3ddfd126f5ecea6729b2361452",
-    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#aee0039a2d6686ec78352125010ebb38a7a7d743",
-    "serve-static": "github:DefinitelyTyped/DefinitelyTyped/serve-static/serve-static.d.ts#0fa4e9e61385646ea6a4cba2aef357353d2ce77f",
-    "systemjs": "github:DefinitelyTyped/DefinitelyTyped/systemjs/systemjs.d.ts#83af898254689400de8fb6495c34119ae57ec3fe"
+    "express": "registry:dt/express#4.0.0+20160317120654",
+    "jquery": "registry:dt/jquery#1.10.0+20160417213236",
+    "node": "registry:dt/node#4.0.0+20160501135006"
   }
 }

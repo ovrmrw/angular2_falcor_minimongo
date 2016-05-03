@@ -1,7 +1,7 @@
 import lodash from 'lodash';
 const flatten = require('flat');
 const Router = require('falcor-router');
-import {deserializeQueryJsonForFalcor} from '../src-front/app/falcor-json-serializer';
+import {deserializeQueryJsonForFalcor} from './falcor-json-serializer';
 
 import {MinimongoFactory} from './minimongo-factory';
 const db = new MinimongoFactory().getDatabase(); // getDatabase()のときにDBがシングルトンで生成される。

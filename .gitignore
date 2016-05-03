@@ -26,11 +26,11 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-src*/**/*.js
+src-client/**/*.js
+src-server/**/*.js
 views/**/*.js
 express.js
 electron.js
-**/*.js.map
 
 **/*.secret
 **/*.secret.*
