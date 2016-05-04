@@ -56,7 +56,7 @@ export function messageStateReducerPage2(initState: Promise<string>, dispatcher$
 
 // Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
 export function documentsStateReducerPage3(initState: Promise<{}[]>, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<{}[]>> {
-  return dispatcher$.scan((message: Promise<{}[]>, action: Action) => {
+  return dispatcher$.scan((documents: Promise<{}[]>, action: Action) => {
     if (action instanceof NextDocumentsFromFalcorPage3) {
       return new Promise<{}[]>(resolve => {
         falcorModel
@@ -64,12 +64,11 @@ export function documentsStateReducerPage3(initState: Promise<{}[]>, dispatcher$
           .then(jsonGraph => {
             console.log(JSON.stringify(jsonGraph, null, 2));
             const documents = getArrayFromJsonGraph(jsonGraph, ['json', ...action.targetLayerArray], []);
-            console.log(documents);
             resolve(documents);
           });
       });
     } else {
-      return message;
+      return documents;
     }
   }, initState);
 }
