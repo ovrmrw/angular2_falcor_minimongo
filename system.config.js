@@ -43,6 +43,7 @@ System.config({
 
     '@angular': 'node:@angular',
     'rxjs': 'node:rxjs',
+    'symbol-observable': 'node:symbol-observable',
     // 'zone.js': 'node:zone.js'
   },
   packages: {
@@ -56,6 +57,7 @@ System.config({
     '@angular/router-deprecated': { main: 'index' },
     '@angular/http': { main: 'index' },
     'rxjs': {},
+    'symbol-observable': { main: 'index' },
     // 'zone.js': {}
   }
 });
