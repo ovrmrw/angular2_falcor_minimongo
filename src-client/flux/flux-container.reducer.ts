@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs/Observable';
 import {ActionTypeAll, ActionTypePage1, } from './flux-action';
-import {NextNow, NextMessageFromFalcorForPage1} from './flux-action';
+import {NextNow, NextMessageFromFalcorPage1, NextMessageFromFalcorPage2} from './flux-action';
 import 'rxjs/add/operator/scan';
 
 import { getValueFromJsonGraph } from '../app/falcor-utils';
@@ -11,15 +11,34 @@ export function nowStateReducer(initState: number, dispatcher$: Observable<Actio
     if (action instanceof NextNow) {
       return action.datetime;
     } else {
-      return datetime; 
+      return datetime;
     }
   }, initState);
 }
 
 // Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
-export function messagePage1StateReducer(initState: Promise<string>, dispatcher$: Observable<ActionTypePage1>, falcorModel: any): Observable<Promise<string>> {
+export function messageStateReducerPage1(initState: Promise<string>, dispatcher$: Observable<ActionTypePage1>, falcorModel: any): Observable<Promise<string>> {
   return dispatcher$.scan<Promise<string>>((message: Promise<string>, action: ActionTypePage1) => {
-    if (action instanceof NextMessageFromFalcorForPage1) {
+    if (action instanceof NextMessageFromFalcorPage1) {
+      return new Promise<string>(resolve => {
+        falcorModel
+          .get(action.falcorQuery)
+          .then(jsonGraph => {
+            console.log(JSON.stringify(jsonGraph, null, 2));
+            const message = getValueFromJsonGraph(jsonGraph, ['json', ...action.falcorQuery], '?????') as string;
+            resolve(message);
+          });
+      });
+    } else {
+      return message;
+    }
+  }, initState);
+}
+
+// Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
+export function messageStateReducerPage2(initState: Promise<string>, dispatcher$: Observable<ActionTypePage1>, falcorModel: any): Observable<Promise<string>> {
+  return dispatcher$.scan<Promise<string>>((message: Promise<string>, action: ActionTypePage1) => {
+    if (action instanceof NextMessageFromFalcorPage2) {
       return new Promise<string>(resolve => {
         falcorModel
           .get(action.falcorQuery)

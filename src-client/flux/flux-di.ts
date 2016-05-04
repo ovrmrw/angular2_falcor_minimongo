@@ -16,8 +16,12 @@ export class Dispatcher<T> extends Subject<T> {
 const initState: AppState = {
   falcorModel: new falcor.Model({ source: new falcor.HttpDataSource('/model.json') }),
   statePage1: {
-    nowByObservable: null,
-    messageByFalcor: null
+    nowByPush: null,
+    messageByPush: null
+  },
+  statePage2: {
+    nowByPush: null,
+    messageByPush: null
   }
 }
 

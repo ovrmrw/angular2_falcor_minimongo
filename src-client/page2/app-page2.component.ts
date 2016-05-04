@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
@@ -7,6 +7,10 @@ import lodash from 'lodash';
 import falcor from 'falcor'; // const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
+
+import {Action, NextNow, NextMessageFromFalcorPage2} from '../flux/flux-action';
+import {Container} from '../flux/flux-container';
+import {Dispatcher} from '../flux/flux-di';
 
 const COMPONENT_SELECTOR = 'my-page2'
 @Component({
@@ -25,12 +29,13 @@ const COMPONENT_SELECTOR = 'my-page2'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{messageByFalcor}}</h3>
+        <h3>{{messageByPush | async | async}}</h3>
       </div>
     </div>
-    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
+    <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
   `,
-  directives: [AppModal]
+  directives: [AppModal],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppPage2 extends AppPageParent implements OnInit {
   // 以下のstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
@@ -38,11 +43,26 @@ export class AppPage2 extends AppPageParent implements OnInit {
   get keyword() { return AppPage2._keyword; }
   set keyword(keyword: string) { AppPage2._keyword = keyword; }
 
-  nowByObservable: number; // Observableイベントハンドラによって値が代入される。
-  messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
+  // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
+  // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
+  get nowByPush() {
+    return this.container.state$.map(state => {
+      return state.statePage2.nowByPush;
+    });
+  }
+  get messageByPush() {
+    // 戻り値がObservable<Promise<string>>なのでtemplateではasyncパイプを2回通すこと。
+    // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
+    return this.container.state$.map(state => {
+      return state.statePage2.messageByPush;
+    });
+  }
 
   // ページ遷移で入る度に呼び出される。
-  constructor() {
+  constructor(
+    private dispatcher$: Dispatcher<Action>,
+    private container: Container
+  ) {
     super(COMPONENT_SELECTOR);
   }
   ngOnInit() {
@@ -57,10 +77,10 @@ export class AppPage2 extends AppPageParent implements OnInit {
   }
   initializableEventObservables(): void {
     this.disposableSubscription = Observable.fromEvent<KeyboardEvent>(document.getElementById('keyword'), 'keyup')
-      .debounce(() => Observable.timer(1000)) // イベントストリームが1秒間途切れるのを待つ。
+      // .debounce(() => Observable.timer(1000)) // イベントストリームが1秒間途切れるのを待つ。
       .subscribe(() => {
         this.loadJsonGraph(); // eventからvalueを取り出さなくても既にthis.keywordの値は変わっている。
-        Materialize.toast(`Falcor query with word '${this.keyword}' is triggered`, 2000);
+        // Materialize.toast(`Falcor query with word '${this.keyword}' is triggered`, 2000);
       });
 
     this.disposableSubscription = Observable.fromEvent<MouseEvent>(document.getElementsByTagName(COMPONENT_SELECTOR), 'click')
@@ -72,7 +92,8 @@ export class AppPage2 extends AppPageParent implements OnInit {
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        this.nowByObservable = lodash.now();
+        // this.nowByObservable = lodash.now();
+        this.dispatcher$.next(new NextNow(lodash.now()));
       });
   }
 
@@ -81,12 +102,13 @@ export class AppPage2 extends AppPageParent implements OnInit {
   getJsonGraph(keyword: string) {
     const queryName = 'query2';
 
-    this.model // this.modelは親クラスで定義されている。
-      .get([queryName, keyword])
-      .then(jsonGraph => {
-        console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, keyword], '?????');
-      });
+    // this.model // this.modelは親クラスで定義されている。
+    //   .get([queryName, keyword])
+    //   .then(jsonGraph => {
+    //     console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
+    //     this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, keyword], '?????');
+    //   });
+    this.dispatcher$.next(new NextMessageFromFalcorPage2([queryName, keyword]));
   }
   loadJsonGraph() {
     this.getJsonGraph(this.keyword);

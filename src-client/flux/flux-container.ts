@@ -6,7 +6,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/zip';
 
 import {Action} from './flux-action';
-import {nowStateReducer, messagePage1StateReducer} from './flux-container.reducer';
+import {nowStateReducer, messageStateReducerPage1, messageStateReducerPage2} from './flux-container.reducer';
 
 export class Container {
   private stateSubject$: Subject<AppState>;
@@ -16,14 +16,19 @@ export class Container {
 
     Observable
       .zip<AppState>(
-        nowStateReducer(initState.statePage1.nowByObservable, dispatcher$),
-        messagePage1StateReducer(initState.statePage1.messageByFalcor, dispatcher$, initState.falcorModel),
-        (now, message) => {
+        nowStateReducer(initState.statePage1.nowByPush, dispatcher$),
+        messageStateReducerPage1(initState.statePage1.messageByPush, dispatcher$, initState.falcorModel),
+        messageStateReducerPage2(initState.statePage2.messageByPush, dispatcher$, initState.falcorModel),
+        (now, messagePage1, messagePage2) => {
           return {
             falcorModel: initState.falcorModel,
             statePage1: {
-              nowByObservable: now,
-              messageByFalcor: message
+              nowByPush: now,
+              messageByPush: messagePage1
+            },
+            statePage2: {
+              nowByPush: now,
+              messageByPush: messagePage2
             }
           } as AppState;
         }
