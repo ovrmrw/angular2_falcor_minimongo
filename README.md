@@ -4,6 +4,13 @@ Angular2 Advent Calendar 2015 13日目の記事 [新鮮なFalcorとAngular2の�
 
 **Angular2 rc.1 に対応しました。**
 
+---
+
+(UPDATE)  
+現在、Flux化を進めている最中です。Page1,Page2,Page3はFlux化されています。
+
+---
+
 ### How to setup
 ```
 npm install

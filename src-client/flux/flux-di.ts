@@ -1,11 +1,10 @@
-import { bind } from '@angular/core';
+import {bind} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
-const falcor = require('falcor');
+import {Observer} from 'rxjs/Observer';
 
-import { Action } from './flux-action';
-import { Container } from './flux-container';
+import {Action} from './flux-action';
+import {Container} from './flux-container';
 
 export class Dispatcher<T> extends Subject<T> {
   constructor(destination?: Observer<T>, source?: Observable<T>) { 
@@ -14,14 +13,15 @@ export class Dispatcher<T> extends Subject<T> {
 }
 
 const initState: AppState = {
-  falcorModel: new falcor.Model({ source: new falcor.HttpDataSource('/model.json') }),
-  statePage1: {
-    nowByPush: null,
+  nowByPush: null,
+  page1: {
     messageByPush: null
   },
-  statePage2: {
-    nowByPush: null,
+  page2: {
     messageByPush: null
+  },
+  page3: {
+    documentsByPush: null
   }
 }
 

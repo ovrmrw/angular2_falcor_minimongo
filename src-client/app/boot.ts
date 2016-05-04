@@ -14,6 +14,7 @@ import 'rxjs/add/operator/debounce';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/merge';
+import 'rxjs/add/operator/debounceTime';
 
 enableProdMode();
 bootstrap(App, [ROUTER_PROVIDERS, provide(LocationStrategy, { useClass: HashLocationStrategy })]);

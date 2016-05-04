@@ -4,7 +4,7 @@ import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
 import {getValueFromJsonGraph} from '../app/falcor-utils';
 import lodash from 'lodash';
-import falcor from 'falcor'; // const falcor = require('falcor');
+// import falcor from 'falcor'; // const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
 
@@ -47,14 +47,14 @@ export class AppPage2 extends AppPageParent implements OnInit {
   // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
   get nowByPush() {
     return this.container.state$.map(state => {
-      return state.statePage2.nowByPush;
+      return state.nowByPush;
     });
   }
   get messageByPush() {
     // 戻り値がObservable<Promise<string>>なのでtemplateではasyncパイプを2回通すこと。
     // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
     return this.container.state$.map(state => {
-      return state.statePage2.messageByPush;
+      return state.page2.messageByPush;
     });
   }
 

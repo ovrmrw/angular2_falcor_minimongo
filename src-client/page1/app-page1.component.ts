@@ -35,14 +35,14 @@ export class AppPage1 extends AppPageParent implements OnInit {
   // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
   get nowByPush() {
     return this.container.state$.map(state => {
-      return state.statePage1.nowByPush;
-    });
+      return state.nowByPush;
+    });    
   }
   get messageByPush() {
     // 戻り値がObservable<Promise<string>>なのでtemplateではasyncパイプを2回通すこと。
     // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
     return this.container.state$.map(state => {
-      return state.statePage1.messageByPush;
+      return state.page1.messageByPush;
     });
   }
 

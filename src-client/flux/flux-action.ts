@@ -13,12 +13,10 @@ export class NextMessageFromFalcorPage2 {
   constructor(public falcorQuery: any[]) { }
 }
 
+// Actions for Page3
+export class NextDocumentsFromFalcorPage3 {
+  constructor(public falcorQuery: any[], public targetLayerArray:any[]) { }
+}
 
 // Action types
-export type ActionTypeAll = NextNow;
-
-export type ActionTypePage1 = NextMessageFromFalcorPage1;
-
-export type ActionTypePage2 = NextMessageFromFalcorPage2;
-
-export type Action = ActionTypeAll | ActionTypePage1 | ActionTypePage2; 
+export type Action = NextNow | NextMessageFromFalcorPage1 | NextMessageFromFalcorPage2 | NextDocumentsFromFalcorPage3; 

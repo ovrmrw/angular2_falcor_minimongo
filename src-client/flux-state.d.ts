@@ -1,15 +1,19 @@
 declare interface StatePage1 {
-  nowByPush: number,
   messageByPush: Promise<string>
 }
 
 declare interface StatePage2 {
-  nowByPush: number,
   messageByPush: Promise<string>
 }
 
+declare interface StatePage3 {
+  documentsByPush: Promise<{}[]>
+}
+
 declare interface AppState {
-  falcorModel: any,
-  statePage1: StatePage1,
-  statePage2: StatePage2,
+  //falcorModel: any,
+  nowByPush: number,
+  page1: StatePage1,
+  page2: StatePage2,
+  page3: StatePage3,
 }
