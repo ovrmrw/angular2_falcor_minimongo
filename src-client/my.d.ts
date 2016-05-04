@@ -12,3 +12,5 @@ declare interface EventTarget {
 declare interface MouseEvent {
   path: HTMLElement[];
 }
+
+

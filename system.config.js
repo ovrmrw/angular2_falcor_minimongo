@@ -39,7 +39,7 @@ System.config({
     // 'moment': 'node:moment/min/moment.min.js',
     'lodash': 'node:lodash/lodash.js',
     'flat': 'node:flat/index.js',
-    'falcor': 'node:falcor/dist/falcor.browser.min.js',
+    'falcor': 'node:falcor/dist/falcor.browser.js',
 
     '@angular': 'node:@angular',
     'rxjs': 'node:rxjs',

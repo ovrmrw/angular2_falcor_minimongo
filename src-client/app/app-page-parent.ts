@@ -1,6 +1,6 @@
 import {AfterViewInit, AfterContentInit, OnInit, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-const falcor = require('falcor');
+const falcor = require('falcor'); // import falcor from 'falcor';
 
 export abstract class AppPageParent implements AfterViewInit, AfterContentInit, OnInit, OnDestroy {
   // private static _initializedJQueryPluginSelectors: string[] = [];

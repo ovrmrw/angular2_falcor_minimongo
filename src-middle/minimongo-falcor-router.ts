@@ -1,9 +1,9 @@
 import lodash from 'lodash';
 const flatten = require('flat');
-const Router = require('falcor-router');
+import Router from 'falcor-router'; // const Router = require('falcor-router');
 import {deserializeQueryJsonForFalcor} from './falcor-json-serializer';
 
-import {MinimongoFactory} from './minimongo-factory';
+import {MinimongoFactory} from '../src-server/minimongo-factory';
 const db = new MinimongoFactory().getDatabase(); // getDatabase()のときにDBがシングルトンで生成される。
 
 let routes = []; // routeをどんどんpushしてRouter.createClass()の引数にする。

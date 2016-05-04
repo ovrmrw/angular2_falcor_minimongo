@@ -10,19 +10,6 @@ const ignore = require('gulp-ignore');
 /////////////////////////////////////////////////////////////////////////
 // TypeScript Compile
 
-gulp.task('tscServer', () => {
-  const tsProject = ts.createProject('tsconfig.json', { noExternalResolve: true });
-  tsProject.src()
-    .pipe(plumber())
-    //.pipe(ignore.exclude(['src-server/**/*.ts']))
-    .pipe(ignore.include(['src-server/**/*.ts']))
-    .pipe(ts(tsProject))
-    .pipe(babel({
-      presets: ['es2015']
-    }))
-    .pipe(gulp.dest('.'));
-});
-
 gulp.task('tscClient', () => {
   const tsProject = ts.createProject('tsconfig.json', { noExternalResolve: true });
   tsProject.src()
@@ -36,11 +23,24 @@ gulp.task('tscClient', () => {
     .pipe(gulp.dest('.'));
 });
 
-gulp.task('compile', ['tscServer', 'tscClient']);
+gulp.task('tscServer', () => {
+  const tsProject = ts.createProject('tsconfig.json', { noExternalResolve: true });
+  tsProject.src()
+    .pipe(plumber())
+    //.pipe(ignore.exclude(['src-server/**/*.ts']))
+    .pipe(ignore.include(['src-server/**/*.ts', 'src-middle/**/*.ts']))
+    .pipe(ts(tsProject))
+    .pipe(babel({
+      presets: ['es2015']
+    }))
+    .pipe(gulp.dest('.'));
+});
+
+gulp.task('compile', ['tscClient', 'tscServer']);
 
 gulp.task('watch', [], () => {
-  gulp.watch(['src-server/**/*.ts'], ['tscServer']);
   gulp.watch(['src-client/**/*.ts'], ['tscClient']);
+  gulp.watch(['src-server/**/*.ts', 'src-middle/**/*.ts'], ['tscServer']);
 });
 
 /////////////////////////////////////////////////////////////////////////

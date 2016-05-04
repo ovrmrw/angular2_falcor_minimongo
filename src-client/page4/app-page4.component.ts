@@ -6,7 +6,7 @@ import {AppModal} from '../app/app-modal.component';
 import {getArrayFromJsonGraph, getValueFromJsonGraph} from '../app/falcor-utils';
 import lodash from 'lodash';
 import falcor from 'falcor'; // const falcor = require('falcor');
-import {serializeQueryObjectForFalcor} from '../../src-server/falcor-json-serializer';
+import {serializeQueryObjectForFalcor} from '../../src-middle/falcor-json-serializer';
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
 

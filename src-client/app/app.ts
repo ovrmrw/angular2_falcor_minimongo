@@ -1,10 +1,12 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {Router, Route, RouteConfig, ROUTER_DIRECTIVES} from '@angular/router-deprecated';
 import {Location} from '@angular/common';
 import {AppPage1} from '../page1/app-page1.component';
 import {AppPage2} from '../page2/app-page2.component';
 import {AppPage3} from '../page3/app-page3.component';
 import {AppPage4} from '../page4/app-page4.component';
+
+import {stateAndDispatcher} from '../flux/flux-di';
 
 const COMPONENT_SELECTOR = 'my-app'
 @Component({
@@ -46,7 +48,9 @@ const COMPONENT_SELECTOR = 'my-app'
       </div>
     </footer>
   `,
-  directives: [AppPage1, AppPage2, AppPage3, AppPage4, ROUTER_DIRECTIVES]
+  directives: [AppPage1, AppPage2, AppPage3, AppPage4, ROUTER_DIRECTIVES],
+  providers: [stateAndDispatcher],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 @RouteConfig([
   new Route({ path: '/p1', component: AppPage1, name: 'Page1', useAsDefault: true }),

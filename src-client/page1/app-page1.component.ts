@@ -1,12 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/observable/fromPromise';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
 import {getValueFromJsonGraph} from '../app/falcor-utils';
 import lodash from 'lodash';
-import falcor from 'falcor'; // const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
+
+import {Action, NextNow, NextMessageFromFalcorForPage1} from '../flux/flux-action';
+import {Container} from '../flux/flux-container';
+import {Dispatcher} from '../flux/flux-di';
 
 const COMPONENT_SELECTOR = 'my-page1'
 @Component({
@@ -19,20 +23,35 @@ const COMPONENT_SELECTOR = 'my-page1'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{messageByFalcor}}</h3>
+        <h3>{{messageByFalcor | async | async}}</h3>
       </div>
     </div>
-    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
+    <my-modal [texts]="modalTexts" [now]="nowByObservable | async"></my-modal>
   `,
-  directives: [AppModal]
+  directives: [AppModal],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppPage1 extends AppPageParent implements OnInit {
-
-  nowByObservable: number; // Observableイベントハンドラによって値が代入される。
-  messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
+  // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
+  // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
+  get nowByObservable() {
+    return this.container.state$.map(state => {
+      return state.statePage1.nowByObservable;
+    });
+  }
+  get messageByFalcor() {
+    // 戻り値がObservable<Promise<string>>なのでtemplateではasyncパイプを2回通すこと。
+    // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
+    return this.container.state$.map(state => {
+      return state.statePage1.messageByFalcor;
+    });
+  }
 
   // ページ遷移で入る度に呼び出される。
-  constructor() {
+  constructor(
+    private dipatcher$: Dispatcher<Action>,
+    private container: Container
+  ) {
     super(COMPONENT_SELECTOR);
   }
   ngOnInit() {
@@ -54,7 +73,8 @@ export class AppPage1 extends AppPageParent implements OnInit {
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        this.nowByObservable = lodash.now();
+        // this.nowByObservable = lodash.now();
+        this.dipatcher$.next(new NextNow(lodash.now()));
       });
   }
 
@@ -63,12 +83,13 @@ export class AppPage1 extends AppPageParent implements OnInit {
   getJsonGraph() {
     const queryName = 'query1';
 
-    this.model // this.modelは親クラスで定義されている。
-      .get([queryName])
-      .then(jsonGraph => {
-        console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
-        this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName], '?????');
-      });
+    // this.model // this.modelは親クラスで定義されている。
+    //   .get([queryName])
+    //   .then(jsonGraph => {
+    //     console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。
+    //     this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName], '?????');
+    //   });
+    this.dipatcher$.next(new NextMessageFromFalcorForPage1([queryName]));
   }
   loadJsonGraph() {
     this.getJsonGraph();

@@ -1,8 +1,8 @@
 import lodash from 'lodash';
 import express from 'express';
 import path from 'path';
-const falcorExpress = require('falcor-express');
-import {MinimongoFalcorRouter} from './minimongo-falcor-router';
+import falcorExpress from 'falcor-express'; // const falcorExpress = require('falcor-express');
+import {MinimongoFalcorRouter} from '../src-middle/minimongo-falcor-router';
 
 require('dotenv').load();
 // const EXPRESS_ENV = String(process.env.EXPRESS_ENV).trim(); // development or production
