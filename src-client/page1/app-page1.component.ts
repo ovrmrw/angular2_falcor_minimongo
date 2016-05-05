@@ -11,6 +11,10 @@ import {Action, NextNow, NextMessageFromFalcorPage1} from '../flux/flux-action';
 import {Container} from '../flux/flux-container';
 import {Dispatcher} from '../flux/flux-di';
 
+import 'rxjs/add/observable/fromPromise'
+// import 'rxjs/add/operator/fromObservable'
+
+
 const COMPONENT_SELECTOR = 'my-page1'
 @Component({
   selector: COMPONENT_SELECTOR,
@@ -22,7 +26,7 @@ const COMPONENT_SELECTOR = 'my-page1'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{messageByPush | async | async}}</h3>
+        <h3>{{messageByPush | async}}</h3>
       </div>
     </div>
     <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
@@ -35,14 +39,16 @@ export class AppPage1 extends AppPageParent implements OnInit {
   // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
   get nowByPush() {
     return this.container.state$.map(state => {
-      return state.nowByPush;
-    });    
+      return state.now;
+    });
   }
-  get messageByPush() {
-    // 戻り値がObservable<Promise<string>>なのでtemplateではasyncパイプを2回通すこと。
-    // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
-    return this.container.state$.map(state => {
-      return state.page1.messageByPush;
+  private messageByPush: Promise<string>;
+  subscribeStateMessage() {
+    // 戻り値がObservable<Promise<State>>なのでsubscribeしてPromise<State>からPromise<string>に変換する必要がある。
+    this.container.state$.map(appState => {
+      return appState.page1;
+    }).subscribe(page1 => {
+      this.messageByPush = new Promise(resolve => page1.then(s => resolve(s.message)));      
     });
   }
 
@@ -55,6 +61,7 @@ export class AppPage1 extends AppPageParent implements OnInit {
   }
   ngOnInit() {
     super.ngOnInit();
+    this.subscribeStateMessage();
     this.loadJsonGraph();
   }
 

@@ -29,7 +29,7 @@ const COMPONENT_SELECTOR = 'my-page2'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{messageByPush | async | async}}</h3>
+        <h3>{{messageByPush | async}}</h3>
       </div>
     </div>
     <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
@@ -47,14 +47,16 @@ export class AppPage2 extends AppPageParent implements OnInit {
   // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
   get nowByPush() {
     return this.container.state$.map(state => {
-      return state.nowByPush;
+      return state.now;
     });
   }
-  get messageByPush() {
-    // 戻り値がObservable<Promise<string>>なのでtemplateではasyncパイプを2回通すこと。
-    // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
-    return this.container.state$.map(state => {
-      return state.page2.messageByPush;
+  private messageByPush: Promise<string>;
+  subscribeStateMessage() {
+    // 戻り値がObservable<Promise<State>>なのでsubscribeしてPromise<State>からPromise<string>に変換する必要がある。
+    this.container.state$.map(appState => {
+      return appState.page2;
+    }).subscribe(page2 => {
+      this.messageByPush = new Promise(resolve => page2.then(s => resolve(s.message)));      
     });
   }
 
@@ -67,6 +69,7 @@ export class AppPage2 extends AppPageParent implements OnInit {
   }
   ngOnInit() {
     super.ngOnInit();
+    this.subscribeStateMessage();
     this.loadJsonGraph();
     document.getElementById('keyword').focus();
   }

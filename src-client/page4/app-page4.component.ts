@@ -1,14 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppPage4Table} from './app-page4-table.component';
 import {AppModal} from '../app/app-modal.component';
 import {getArrayFromJsonGraph, getValueFromJsonGraph} from '../app/falcor-utils';
 import lodash from 'lodash';
-import falcor from 'falcor'; // const falcor = require('falcor');
+// import falcor from 'falcor'; // const falcor = require('falcor');
 import {serializeQueryObjectForFalcor} from '../../src-middle/falcor-json-serializer';
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
 declare var Materialize: any; // HTMLファイルでロード済み
+
+import {Action, NextNow, NextDocumentsFromFalcorPage4} from '../flux/flux-action';
+import {Container} from '../flux/flux-container';
+import {Dispatcher} from '../flux/flux-di';
 
 const COMPONENT_SELECTOR = 'my-page4';
 @Component({
@@ -30,12 +34,13 @@ const COMPONENT_SELECTOR = 'my-page4';
       </div>
     </div>
     
-    <my-complicated-table [fields]="fields" [aliases]="aliases" [aligns]="aligns" [documents]="documentsByFalcor"
-      [totalItems]="totalItemsByFalcor" [itemsPerPage]="itemsPerPage" [currentPage]="currentPageByObservable"></my-complicated-table>
+    <my-complicated-table [fields]="fields" [aliases]="aliases" [aligns]="aligns" [documents]="documentsByPush"
+      [totalItems]="totalItemsByPush" [itemsPerPage]="itemsPerPage" [currentPage]="currentPageByObservable"></my-complicated-table>
       
-    <my-modal [texts]="modalTexts" [now]="nowByObservable"></my-modal>
+    <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
   `,
-  directives: [AppPage4Table, AppModal]
+  directives: [AppPage4Table, AppModal],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppPage4 extends AppPageParent implements OnInit {
   // 以下2つのstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
@@ -46,14 +51,51 @@ export class AppPage4 extends AppPageParent implements OnInit {
   get searchWord() { return AppPage4._searchWord; }
   set searchWord(word: string) { AppPage4._searchWord = word; }
 
-  nowByObservable: number; // Observableイベントハンドラによって値が代入される。
+  // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
+  get nowByPush() {
+    return this.container.state$.map(state => {
+      return state.now;
+    });
+  }
+  private documentsByPush: {}[];
+  subscribeStateDocuments() {
+    // Promiseではなく直接値を取得しておかないとページネーションの動作がおかしくなる。(不必要に表示が一瞬消える)
+    // subscribeの中でPromiseをthenして値を取得する場合はエラーを発生させないようにinstanceofのチェックを入れている。
+    // エラーを発生させるとChangeDetectionがちゃんと変更検知してくれない。
+    this.container.state$.map(appState => {
+      return appState.page4;
+    }).subscribe(page4 => {
+      // this.documentsByPush = new Promise(resolve => page4.then(s => resolve(s.documents)));
+      if (page4 instanceof Promise)
+        page4.then(s => this.documentsByPush = s.documents);
+    });
+  }
+  private totalItemsByPush: number;
+  subscribeStateTotalItems() {
+    // Promiseではなく直接値を取得しておかないとページネーションの動作がおかしくなる。(不必要に表示が一瞬消える)
+    // subscribeの中でPromiseをthenして値を取得する場合はエラーを発生させないようにinstanceofのチェックを入れている。
+    // エラーを発生させるとChangeDetectionがちゃんと変更検知してくれない。
+    this.container.state$.map(appState => {
+      return appState.page4;
+    }).subscribe(page4 => {
+      // this.totalItemsByPush = new Promise(resolve => page4.then(s => resolve(s.totalItems)));
+      if (page4 instanceof Promise)
+        page4.then(s => this.totalItemsByPush = s.totalItems);
+    });
+  }
 
   // ページ遷移で入る度に呼び出される。
-  constructor() {
+  constructor(
+    private dispatcher$: Dispatcher<Action>,
+    private container: Container,
+    private cd: ChangeDetectorRef
+  ) {
     super(COMPONENT_SELECTOR);
   }
   ngOnInit() {
     super.ngOnInit();
+    this.subscribeStateDocuments();
+    this.subscribeStateTotalItems();
     this.loadJsonGraph();
     document.getElementById('condition').focus();
   }
@@ -66,11 +108,11 @@ export class AppPage4 extends AppPageParent implements OnInit {
     // 2つのinputエレメントの入力を束ねて(mergeして)listenしています。
     this.disposableSubscription = Observable.fromEvent<KeyboardEvent>(document.getElementById('searchWord'), 'keyup')
       .merge(Observable.fromEvent<KeyboardEvent>(document.getElementById('condition'), 'keyup'))
-      .debounce(() => Observable.timer(1000)) // イベントストリームが1秒間途切れるのを待つ。
+      // .debounce(() => Observable.timer(1000)) // イベントストリームが1秒間途切れるのを待つ。
       .subscribe(() => {
         this.currentPageByObservable = 1;
         this.loadJsonGraph(); // eventからvalueを取り出さなくても既にthis.searchWordの値は変わっている。
-        Materialize.toast(`Falcor query with word '${this.searchWord}' in '${this.condition}' is triggered`, 2000);
+        // Materialize.toast(`Falcor query with word '${this.searchWord}' in '${this.condition}' is triggered`, 2000);
       });
 
     // app-page4-table.component.ts で定義されたカスタムイベントの発火をこのObservableがlistenする。
@@ -91,7 +133,8 @@ export class AppPage4 extends AppPageParent implements OnInit {
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        this.nowByObservable = lodash.now();
+        // this.nowByObservable = lodash.now();
+        this.dispatcher$.next(new NextNow(lodash.now()));
       });
   }
 
@@ -99,8 +142,8 @@ export class AppPage4 extends AppPageParent implements OnInit {
   fields: string[] = ['name.first, name.last', 'gender', 'birthday', 'contact.phone.0', 'contact.email.0', 'contact.address.street, contact.address.city, contact.address.state'];
   aliases: string[] = ['name', null, null, 'phone', 'email', 'address'];
   aligns: string[] = [null, 'center', null, null, null, 'right'];
-  documentsByFalcor: any[]; // loadJsonGraph()のクエリ結果を格納する。
-  totalItemsByFalcor: number = 0; // loadJsonGraph()のクエリ結果を格納する。
+  // documentsByFalcor: any[]; // loadJsonGraph()のクエリ結果を格納する。
+  // totalItemsByFalcor: number = 0; // loadJsonGraph()のクエリ結果を格納する。
   currentPageByObservable: number = 1; // Observableイベントハンドラによって値が代入される。
   itemsPerPage: number = 10;
 
@@ -114,22 +157,27 @@ export class AppPage4 extends AppPageParent implements OnInit {
       keyword: keyword
     });
 
-    this.model // this.modelは親クラスで定義されている。
-      .get([queryName, queryJson, { from: from, length: length }, [...this.fields, 'totalItems']])
-      .then(jsonGraph => {
-        console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。        
-        this.documentsByFalcor = getArrayFromJsonGraph(jsonGraph, ['json', queryName, queryJson], []);
-        this.totalItemsByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, queryJson, from, 'totalItems'], 0);
-        console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
+    // this.model // this.modelは親クラスで定義されている。
+    //   .get([queryName, queryJson, { from: from, length: length }, [...this.fields, 'totalItems']])
+    //   .then(jsonGraph => {
+    //     console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。        
+    //     this.documentsByFalcor = getArrayFromJsonGraph(jsonGraph, ['json', queryName, queryJson], []);
+    //     this.totalItemsByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, queryJson, from, 'totalItems'], 0);
+    //     console.log(this.documentsByFalcor); // tableに描画するための配列を確認。
 
-        // 次のページがある場合はプリロードしてキャッシュしておく。これにより次のページに遷移したときはキャッシュから読み込まれる。
-        // この例ではわかりやすくするため敢えて1ページ目を表示したときだけ2ページ目のプリロードをする。(from === 0を外せば2ページ目以降もプリロードが動く)
-        if (from === 0 && this.totalItemsByFalcor > from + length) {
-          this.model
-            .get([queryName, queryJson, { from: from + length, length: length }, [...this.fields, 'totalItems']])
-            .then(() => { });
-        }
-      });
+    //     // 次のページがある場合はプリロードしてキャッシュしておく。これにより次のページに遷移したときはキャッシュから読み込まれる。
+    //     // この例ではわかりやすくするため敢えて1ページ目を表示したときだけ2ページ目のプリロードをする。(from === 0を外せば2ページ目以降もプリロードが動く)
+    //     if (from === 0 && this.totalItemsByFalcor > from + length) {
+    //       this.model
+    //         .get([queryName, queryJson, { from: from + length, length: length }, [...this.fields, 'totalItems']])
+    //         .then(() => { });
+    //     }
+    //   });
+    this.dispatcher$.next(new NextDocumentsFromFalcorPage4(
+      [queryName, queryJson, { from: from, length: length }, [...this.fields, 'totalItems']],
+      [queryName, queryJson],
+      [queryName, queryJson, from, 'totalItems']
+    ));
   }
   loadJsonGraph() {
     this.getJsonGraph(this.condition, this.searchWord, (this.currentPageByObservable - 1) * this.itemsPerPage, this.itemsPerPage);

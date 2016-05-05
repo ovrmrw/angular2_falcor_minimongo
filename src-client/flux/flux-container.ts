@@ -6,7 +6,11 @@ import 'rxjs/add/operator/debounceTime';
 const falcor = require('falcor');
 
 import {Action} from './flux-action';
-import {nowStateReducer, messageStateReducerPage1, messageStateReducerPage2, documentsStateReducerPage3} from './flux-container.reducer';
+import {nowStateReducer,
+  stateReducerPage1,
+  stateReducerPage2,
+  stateReducerPage3,
+  stateReducerPage4} from './flux-container.reducer';
 
 export class Container {
   private stateSubject$: Subject<AppState>;
@@ -18,22 +22,18 @@ export class Container {
 
     Observable
       .zip<AppState>(
-        nowStateReducer(initState.nowByPush, dispatcher$),
-        messageStateReducerPage1(initState.page1.messageByPush, dispatcher$, this.falcorModel),
-        messageStateReducerPage2(initState.page2.messageByPush, dispatcher$, this.falcorModel),
-        documentsStateReducerPage3(initState.page3.documentsByPush, dispatcher$, this.falcorModel),
-        (now, messagePage1, messagePage2, documentsPage3) => {
+        nowStateReducer(initState.now, dispatcher$),
+        stateReducerPage1(initState.page1, dispatcher$, this.falcorModel),
+        stateReducerPage2(initState.page2, dispatcher$, this.falcorModel),
+        stateReducerPage3(initState.page3, dispatcher$, this.falcorModel),
+        stateReducerPage4(initState.page4, dispatcher$, this.falcorModel),
+        (now, statePage1, statePage2, statePage3, statePage4) => {
           return {
-            nowByPush: now,
-            page1: {
-              messageByPush: messagePage1
-            },
-            page2: {
-              messageByPush: messagePage2
-            },
-            page3: {
-              documentsByPush: documentsPage3
-            }
+            now: now,
+            page1: statePage1,
+            page2: statePage2,
+            page3: statePage3,
+            page4: statePage4
           } as AppState;
         }
       )

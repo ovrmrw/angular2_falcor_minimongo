@@ -1,7 +1,11 @@
 import {Observable} from 'rxjs/Observable';
-import {Action} from './flux-action';
-import {NextNow, NextMessageFromFalcorPage1, NextMessageFromFalcorPage2, NextDocumentsFromFalcorPage3} from './flux-action';
 import 'rxjs/add/operator/scan';
+import {Action} from './flux-action';
+import {NextNow,
+  NextMessageFromFalcorPage1,
+  NextMessageFromFalcorPage2,
+  NextDocumentsFromFalcorPage3,
+  NextDocumentsFromFalcorPage4} from './flux-action';
 
 import { getValueFromJsonGraph, getArrayFromJsonGraph } from '../app/falcor-utils';
 
@@ -17,58 +21,78 @@ export function nowStateReducer(initState: number, dispatcher$: Observable<Actio
 }
 
 // Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
-export function messageStateReducerPage1(initState: Promise<string>, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<string>> {
-  return dispatcher$.scan((message: Promise<string>, action: Action) => {
+export function stateReducerPage1(initState: any, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<StatePage1>> {
+  return dispatcher$.scan((state: Promise<StatePage1>, action: Action) => {
     if (action instanceof NextMessageFromFalcorPage1) {
-      return new Promise<string>(resolve => {
+      return new Promise<StatePage1>(resolve => {
         falcorModel
           .get(action.falcorQuery)
           .then(jsonGraph => {
             console.log(JSON.stringify(jsonGraph, null, 2));
             const message = getValueFromJsonGraph(jsonGraph, ['json', ...action.falcorQuery], '?????') as string;
-            resolve(message);
+            resolve({ message } as StatePage1);
           });
       });
     } else {
-      return message;
+      return state;
     }
   }, initState);
 }
 
 // Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
-export function messageStateReducerPage2(initState: Promise<string>, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<string>> {
-  return dispatcher$.scan((message: Promise<string>, action: Action) => {
+export function stateReducerPage2(initState: any, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<StatePage2>> {
+  return dispatcher$.scan((state: Promise<StatePage2>, action: Action) => {
     if (action instanceof NextMessageFromFalcorPage2) {
-      return new Promise<string>(resolve => {
+      return new Promise<StatePage2>(resolve => {
         falcorModel
           .get(action.falcorQuery)
           .then(jsonGraph => {
             console.log(JSON.stringify(jsonGraph, null, 2));
             const message = getValueFromJsonGraph(jsonGraph, ['json', ...action.falcorQuery], '?????') as string;
-            resolve(message);
+            resolve({ message } as StatePage2);
           });
       });
     } else {
-      return message;
+      return state;
     }
   }, initState);
 }
 
 // Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
-export function documentsStateReducerPage3(initState: Promise<{}[]>, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<{}[]>> {
-  return dispatcher$.scan((documents: Promise<{}[]>, action: Action) => {
+export function stateReducerPage3(initState: any, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<StatePage3>> {
+  return dispatcher$.scan((state: Promise<StatePage3>, action: Action) => {
     if (action instanceof NextDocumentsFromFalcorPage3) {
-      return new Promise<{}[]>(resolve => {
+      return new Promise<StatePage3>(resolve => {
         falcorModel
           .get(action.falcorQuery)
           .then(jsonGraph => {
             console.log(JSON.stringify(jsonGraph, null, 2));
-            const documents = getArrayFromJsonGraph(jsonGraph, ['json', ...action.targetLayerArray], []);
-            resolve(documents);
+            const documents = getArrayFromJsonGraph(jsonGraph, ['json', ...action.targetLayerArray], []) as {}[];
+            resolve({ documents } as StatePage3);
           });
       });
     } else {
-      return documents;
+      return state;
+    }
+  }, initState);
+}
+
+// Falcorを通してデータを取得するReducer。戻り値がObservable<Promise<any>>になるのが特徴。
+export function stateReducerPage4(initState: any, dispatcher$: Observable<Action>, falcorModel: any): Observable<Promise<StatePage4>> {
+  return dispatcher$.scan((state: Promise<StatePage4>, action: Action) => {
+    if (action instanceof NextDocumentsFromFalcorPage4) {
+      return new Promise<StatePage4>(resolve => {
+        falcorModel
+          .get(action.falcorQuery)
+          .then(jsonGraph => {
+            console.log(JSON.stringify(jsonGraph, null, 2)); // Falcorから返却されるJSON Graphを確認。        
+            const documents = getArrayFromJsonGraph(jsonGraph, ['json', ...action.targetLayerArrayOfDocuments], []) as {}[];
+            const totalItems = getValueFromJsonGraph(jsonGraph, ['json', ...action.targetLayerArrayOfTotalItems], 0) as number;
+            resolve({ documents, totalItems } as StatePage4);
+          });
+      });
+    } else {
+      return state;
     }
   }, initState);
 }

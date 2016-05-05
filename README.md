@@ -7,7 +7,7 @@ Angular2 Advent Calendar 2015 13日目の記事 [新鮮なFalcorとAngular2の�
 ---
 
 (UPDATE)  
-現在、Flux化を進めている最中です。Page1,Page2,Page3はFlux化されています。
+全ページFlux化しました。ブログ記事の内容とは大幅に異なっていますのでご留意下さい。
 
 ---
 

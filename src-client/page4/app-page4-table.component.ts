@@ -17,7 +17,7 @@ const TARGET_PAGE = 'target-page';
         <table class="bordered">
           <thead>
             <tr>
-              <th *ngFor="let field of fields, #i = index" class="center-align">{{aliases[i] || field | uppercase}}</th>
+              <th *ngFor="let field of fields, let i = index" class="center-align">{{aliases[i] || field | uppercase}}</th>
             </tr>
           </thead>
           <tbody *ngIf="totalItems > 0">

@@ -15,8 +15,13 @@ export class NextMessageFromFalcorPage2 {
 
 // Actions for Page3
 export class NextDocumentsFromFalcorPage3 {
-  constructor(public falcorQuery: any[], public targetLayerArray:any[]) { }
+  constructor(public falcorQuery: any[], public targetLayerArray: any[]) { }
+}
+
+// Actions for Page4
+export class NextDocumentsFromFalcorPage4 {
+  constructor(public falcorQuery: any[], public targetLayerArrayOfDocuments: any[], public targetLayerArrayOfTotalItems: any[]) { }
 }
 
 // Action types
-export type Action = NextNow | NextMessageFromFalcorPage1 | NextMessageFromFalcorPage2 | NextDocumentsFromFalcorPage3; 
+export type Action = NextNow | NextMessageFromFalcorPage1 | NextMessageFromFalcorPage2 | NextDocumentsFromFalcorPage3 | NextDocumentsFromFalcorPage4; 

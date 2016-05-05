@@ -1,5 +1,5 @@
 import lodash from 'lodash';
-import falcor from 'falcor'; // const falcor = require('falcor');
+// import falcor from 'falcor'; // const falcor = require('falcor');
 
 // 階層構造のオブジェクトから指定した階層を取り出し、$__pathプロパティを除去して配列化して返す。
 export function getArrayFromJsonGraph(targetObject: {}, targetLayerArray: any[], alt: {}[] = []): {}[] {

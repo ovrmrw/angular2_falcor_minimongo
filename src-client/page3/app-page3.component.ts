@@ -39,7 +39,7 @@ const componentSelector = 'my-page3';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let document of documentsByPush | async | async">
+            <tr *ngFor="let document of documentsByPush | async">
               <td>{{ document['name.first'] }}</td>
               <td>{{ document['name.last'] }}</td>
               <td>{{ document.gender }}</td>
@@ -63,14 +63,16 @@ export class AppPage3 extends AppPageParent implements OnInit {
   // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
   get nowByPush() {
     return this.container.state$.map(state => {
-      return state.nowByPush;
+      return state.now;
     });
   }
-  get documentsByPush() {
-    // 戻り値がObservable<Promise<{}[]>>なのでtemplateではasyncパイプを2回通すこと。
-    // 1回目のasyncパイプでobservableをsubscribeし、2回目のasyncパイプでpromiseをthenする。
-    return this.container.state$.map(state => {
-      return state.page3.documentsByPush;
+  private documentsByPush: Promise<{}[]>;
+  subscribeStateDocuments() {
+    // 戻り値がObservable<Promise<State>>なのでsubscribeしてPromise<State>からPromise<{}[]>に変換する必要がある。
+    this.container.state$.map(appState => {
+      return appState.page3;
+    }).subscribe(page3 => {
+      this.documentsByPush = new Promise(resolve => page3.then(s => resolve(s.documents)));      
     });
   }
 
@@ -83,6 +85,7 @@ export class AppPage3 extends AppPageParent implements OnInit {
   }
   ngOnInit() {
     super.ngOnInit();
+    this.subscribeStateDocuments();
     this.loadJsonGraph();
     document.getElementById('searchWord').focus();
   }

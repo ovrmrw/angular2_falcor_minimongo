@@ -7,22 +7,17 @@ import {Action} from './flux-action';
 import {Container} from './flux-container';
 
 export class Dispatcher<T> extends Subject<T> {
-  constructor(destination?: Observer<T>, source?: Observable<T>) { 
+  constructor(destination?: Observer<T>, source?: Observable<T>) {
     super(destination, source);
   }
 }
 
 const initState: AppState = {
-  nowByPush: null,
-  page1: {
-    messageByPush: null
-  },
-  page2: {
-    messageByPush: null
-  },
-  page3: {
-    documentsByPush: null
-  }
+  now: null,
+  page1: null,
+  page2: null,
+  page3: null,
+  page4: null
 }
 
 export const stateAndDispatcher = [
