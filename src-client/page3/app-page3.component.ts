@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
@@ -39,7 +39,7 @@ const componentSelector = 'my-page3';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let document of (stateByPush | async | async)?.documents">
+            <tr *ngFor="let document of documentsByPush">
               <td>{{ document['name.first'] }}</td>
               <td>{{ document['name.last'] }}</td>
               <td>{{ document.gender }}</td>
@@ -67,22 +67,37 @@ export class AppPage3 extends AppPageParent implements OnInit {
       return appState.now;
     });
   }
-  get stateByPush() {
-    // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
-    return this.container.state$.map(appState => {
-      return appState.page3;
-    });
+  // get stateByPush() {
+  //   // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
+  //   return this.container.state$.map(appState => {
+  //     return appState.page3;
+  //   });
+  // }
+  private documentsByPush: {}[];
+  subscribeState() {
+    // mapの戻り値がObservable<Promise<any>>の場合はsubscribeでPromiseを展開してdetectChangesを書かないとViewが更新されない。
+    this.container.state$
+      .map(appState => appState.page3)
+      .filter(page => page instanceof Promise)
+      .subscribe(page => {
+        page.then(state => {
+          this.documentsByPush = state.documents;
+          this.cd.detectChanges(); // これを書かないとViewが更新されない。理由はよくわからない。
+        });
+      });
   }
 
   // ページ遷移で入る度に呼び出される。
   constructor(
     private dispatcher$: Dispatcher<Action>,
-    private container: Container
+    private container: Container,
+    private cd: ChangeDetectorRef
   ) {
     super(componentSelector);
   }
   ngOnInit() {
     super.ngOnInit();
+    this.subscribeState();
     this.loadJsonGraph();
     document.getElementById('searchWord').focus();
   }

@@ -60,24 +60,24 @@ export class AppPage4 extends AppPageParent implements OnInit {
   private documentsByPush: {}[];
   private totalItemsByPush: number;
   subscribeState() {
-    // Promiseではなく直接値を取得しておかないとページネーションの動作がおかしくなる。(不必要に表示が一瞬消える)
-    // subscribeの中でPromiseをthenして値を取得する場合はエラーを発生させないようにinstanceofのチェックを入れている。
-    // エラーを発生させるとChangeDetectionがちゃんと変更検知してくれない。
-    this.container.state$.map(appState => {
-      return appState.page4;
-    }).subscribe(page4 => {
-      if (page4 instanceof Promise)
-        page4.then(s => {
-          this.documentsByPush = s.documents;
-          this.totalItemsByPush = s.totalItems;
+    // mapの戻り値がObservable<Promise<any>>の場合はsubscribeでPromiseを展開してdetectChangesを書かないとViewが更新されない。
+    this.container.state$
+      .map(appState => appState.page4)
+      .filter(page => page instanceof Promise)
+      .subscribe(page => {
+        page.then(state => {
+          this.documentsByPush = state.documents;
+          this.totalItemsByPush = state.totalItems;
+          this.cd.detectChanges(); // これを書かないとViewが更新されない。理由はよくわからない。
         });
-    });
+      });
   }
 
   // ページ遷移で入る度に呼び出される。
   constructor(
     private dispatcher$: Dispatcher<Action>,
-    private container: Container
+    private container: Container,
+    private cd: ChangeDetectorRef
   ) {
     super(COMPONENT_SELECTOR);
   }
@@ -119,7 +119,7 @@ export class AppPage4 extends AppPageParent implements OnInit {
         Materialize.toast(`You clicked "${text}"`, 300);
       });
 
-    this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
+    this.disposableSubscription = Observable.timer(1, 1000 * 60) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
         // this.nowByPush = lodash.now();
         this.dispatcher$.next(new NextNow(lodash.now()));

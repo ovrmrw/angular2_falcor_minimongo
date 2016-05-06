@@ -29,7 +29,8 @@ const COMPONENT_SELECTOR = 'my-page2'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{(stateByPush | async | async)?.message}}</h3>
+        <!-- <h3>{{messageByPush}}</h3> -->
+        <h3>{{messageByPush}}</h3>
       </div>
     </div>
     <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
@@ -50,22 +51,41 @@ export class AppPage2 extends AppPageParent implements OnInit {
       return appState.now;
     });
   }
-  get stateByPush() {
-    // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
-    return this.container.state$.map(appState => {
-      return appState.page2;
-    });
+  // get stateByPush() {
+  //   // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
+  //   return this.container.state$.map(appState => {
+  //     setTimeout(() => {
+  //       if (appState.page2 instanceof Promise)
+  //         this.cd.detectChanges();
+  //     }, 100);
+  //     return appState.page2;
+  //   });
+  // }
+  private messageByPush: string;
+  subscribeState() {
+    // mapの戻り値がObservable<Promise<any>>の場合はsubscribeでPromiseを展開してdetectChangesを書かないとViewが更新されない。
+    this.container.state$
+      .map(appState => appState.page2)
+      .filter(page => page instanceof Promise)
+      .subscribe(page => {
+        page.then(state => {
+          this.messageByPush = state.message;
+          this.cd.detectChanges(); // これを書かないとViewが更新されない。理由はよくわからない。
+        });
+      });
   }
 
   // ページ遷移で入る度に呼び出される。
   constructor(
     private dispatcher$: Dispatcher<Action>,
-    private container: Container
+    private container: Container,
+    private cd: ChangeDetectorRef
   ) {
     super(COMPONENT_SELECTOR);
   }
   ngOnInit() {
     super.ngOnInit();
+    this.subscribeState();
     this.loadJsonGraph();
     document.getElementById('keyword').focus();
   }
@@ -89,7 +109,7 @@ export class AppPage2 extends AppPageParent implements OnInit {
         Materialize.toast(`You clicked "${text}"`, 300);
       });
 
-    this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
+    this.disposableSubscription = Observable.timer(1, 1000 * 60) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
         // this.nowByPush = lodash.now();
         this.dispatcher$.next(new NextNow(lodash.now()));
