@@ -39,7 +39,7 @@ const componentSelector = 'my-page3';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let document of documentsByPush | async">
+            <tr *ngFor="let document of (stateByPush | async | async)?.documents">
               <td>{{ document['name.first'] }}</td>
               <td>{{ document['name.last'] }}</td>
               <td>{{ document.gender }}</td>
@@ -62,17 +62,15 @@ export class AppPage3 extends AppPageParent implements OnInit {
 
   // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
   get nowByPush() {
-    return this.container.state$.map(state => {
-      return state.now;
+    // 戻り値がObservable<any>なのでtemplateでasyncパイプを1回通すこと。
+    return this.container.state$.map(appState => {
+      return appState.now;
     });
   }
-  private documentsByPush: Promise<{}[]>;
-  subscribeStateDocuments() {
-    // 戻り値がObservable<Promise<State>>なのでsubscribeしてPromise<State>からPromise<{}[]>に変換する必要がある。
-    this.container.state$.map(appState => {
+  get stateByPush() {
+    // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
+    return this.container.state$.map(appState => {
       return appState.page3;
-    }).subscribe(page3 => {
-      this.documentsByPush = new Promise(resolve => page3.then(s => resolve(s.documents)));      
     });
   }
 
@@ -85,7 +83,6 @@ export class AppPage3 extends AppPageParent implements OnInit {
   }
   ngOnInit() {
     super.ngOnInit();
-    this.subscribeStateDocuments();
     this.loadJsonGraph();
     document.getElementById('searchWord').focus();
   }
@@ -122,6 +119,9 @@ export class AppPage3 extends AppPageParent implements OnInit {
   // ここからFalcorのコード。
   collection = 'names';
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  loadJsonGraph() {
+    this.getJsonGraph(this.searchWord, this.itemsPerPage);
+  }
   getJsonGraph(keyword: string, itemsPerPage: number) {
     const queryName = 'query3';
 
@@ -136,9 +136,6 @@ export class AppPage3 extends AppPageParent implements OnInit {
       [queryName, this.collection, keyword, { from: 0, length: itemsPerPage }, ['name.first', 'name.last', 'gender', 'birthday']],
       [queryName, this.collection, keyword])
     );
-  }
-  loadJsonGraph() {
-    this.getJsonGraph(this.searchWord, this.itemsPerPage);
   }
 
   // ここからモーダルウインドウのテキスト。

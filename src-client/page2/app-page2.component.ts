@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
@@ -29,7 +29,7 @@ const COMPONENT_SELECTOR = 'my-page2'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{messageByPush | async}}</h3>
+        <h3>{{(stateByPush | async | async)?.message}}</h3>
       </div>
     </div>
     <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
@@ -39,24 +39,21 @@ const COMPONENT_SELECTOR = 'my-page2'
 })
 export class AppPage2 extends AppPageParent implements OnInit {
   // 以下のstatic変数(及びgetter/setter)はページ遷移しても値が失われない。
-  static _keyword: string = 'Falcor';
+  static _keyword: string = 'Foo';
   get keyword() { return AppPage2._keyword; }
   set keyword(keyword: string) { AppPage2._keyword = keyword; }
 
-  // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
-  // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
+  // nowByPush: number; // Observableイベントハンドラによって値が代入される。
   get nowByPush() {
-    return this.container.state$.map(state => {
-      return state.now;
+    // 戻り値がObservable<any>なのでtemplateでasyncパイプを1回通すこと。
+    return this.container.state$.map(appState => {
+      return appState.now;
     });
   }
-  private messageByPush: Promise<string>;
-  subscribeStateMessage() {
-    // 戻り値がObservable<Promise<State>>なのでsubscribeしてPromise<State>からPromise<string>に変換する必要がある。
-    this.container.state$.map(appState => {
+  get stateByPush() {
+    // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
+    return this.container.state$.map(appState => {
       return appState.page2;
-    }).subscribe(page2 => {
-      this.messageByPush = new Promise(resolve => page2.then(s => resolve(s.message)));      
     });
   }
 
@@ -69,7 +66,6 @@ export class AppPage2 extends AppPageParent implements OnInit {
   }
   ngOnInit() {
     super.ngOnInit();
-    this.subscribeStateMessage();
     this.loadJsonGraph();
     document.getElementById('keyword').focus();
   }
@@ -95,13 +91,16 @@ export class AppPage2 extends AppPageParent implements OnInit {
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        // this.nowByObservable = lodash.now();
+        // this.nowByPush = lodash.now();
         this.dispatcher$.next(new NextNow(lodash.now()));
       });
   }
 
   // ここからFalcorのコード。
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  loadJsonGraph() {
+    this.getJsonGraph(this.keyword);
+  }
   getJsonGraph(keyword: string) {
     const queryName = 'query2';
 
@@ -112,9 +111,6 @@ export class AppPage2 extends AppPageParent implements OnInit {
     //     this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName, keyword], '?????');
     //   });
     this.dispatcher$.next(new NextMessageFromFalcorPage2([queryName, keyword]));
-  }
-  loadJsonGraph() {
-    this.getJsonGraph(this.keyword);
   }
 
   // ここからモーダルウインドウのテキスト。

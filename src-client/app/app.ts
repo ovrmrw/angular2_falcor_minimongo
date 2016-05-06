@@ -14,7 +14,8 @@ const COMPONENT_SELECTOR = 'my-app'
   template: `
     <nav>
       <div class="nav-wrapper">
-        <a href="#" class="brand-logo right">Angular2 + Falcor</a>
+        <!-- <a href="#" class="brand-logo right">Angular2 + Falcor</a> -->
+        <a href="#" class="brand-logo right"></a>
         <ul id="nav-mobile" class="left hide-on-small-and-down">
           <li id="nav1" [class.active]="getLinkStyle('/p1')"><a [routerLink]="['/Page1']" class="waves-effect waves-light"><i class="material-icons left">info_outline</i>Page1</a></li>
           <li id="nav2" [class.active]="getLinkStyle('/p2')"><a [routerLink]="['/Page2']" class="waves-effect waves-light"><i class="material-icons left">input</i>Page2</a></li>
@@ -53,8 +54,8 @@ const COMPONENT_SELECTOR = 'my-app'
   changeDetection: ChangeDetectionStrategy.Default
 })
 @RouteConfig([
-  new Route({ path: '/p1', component: AppPage1, name: 'Page1', useAsDefault: true }),
-  new Route({ path: '/p2', component: AppPage2, name: 'Page2' }),
+  new Route({ path: '/p1', component: AppPage1, name: 'Page1'}),
+  new Route({ path: '/p2', component: AppPage2, name: 'Page2', useAsDefault: true  }),
   new Route({ path: '/p3', component: AppPage3, name: 'Page3' }),
   new Route({ path: '/p4', component: AppPage4, name: 'Page4' }),
 ])

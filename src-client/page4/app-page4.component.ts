@@ -51,51 +51,39 @@ export class AppPage4 extends AppPageParent implements OnInit {
   get searchWord() { return AppPage4._searchWord; }
   set searchWord(word: string) { AppPage4._searchWord = word; }
 
-  // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
+  // nowByPush: number; // Observableイベントハンドラによって値が代入される。
   get nowByPush() {
-    return this.container.state$.map(state => {
-      return state.now;
+    return this.container.state$.map(appState => {
+      return appState.now;
     });
   }
   private documentsByPush: {}[];
-  subscribeStateDocuments() {
-    // Promiseではなく直接値を取得しておかないとページネーションの動作がおかしくなる。(不必要に表示が一瞬消える)
-    // subscribeの中でPromiseをthenして値を取得する場合はエラーを発生させないようにinstanceofのチェックを入れている。
-    // エラーを発生させるとChangeDetectionがちゃんと変更検知してくれない。
-    this.container.state$.map(appState => {
-      return appState.page4;
-    }).subscribe(page4 => {
-      // this.documentsByPush = new Promise(resolve => page4.then(s => resolve(s.documents)));
-      if (page4 instanceof Promise)
-        page4.then(s => this.documentsByPush = s.documents);
-    });
-  }
   private totalItemsByPush: number;
-  subscribeStateTotalItems() {
+  subscribeState() {
     // Promiseではなく直接値を取得しておかないとページネーションの動作がおかしくなる。(不必要に表示が一瞬消える)
     // subscribeの中でPromiseをthenして値を取得する場合はエラーを発生させないようにinstanceofのチェックを入れている。
     // エラーを発生させるとChangeDetectionがちゃんと変更検知してくれない。
     this.container.state$.map(appState => {
       return appState.page4;
     }).subscribe(page4 => {
-      // this.totalItemsByPush = new Promise(resolve => page4.then(s => resolve(s.totalItems)));
       if (page4 instanceof Promise)
-        page4.then(s => this.totalItemsByPush = s.totalItems);
+        page4.then(s => {
+          this.documentsByPush = s.documents;
+          this.totalItemsByPush = s.totalItems;
+        });
     });
   }
 
   // ページ遷移で入る度に呼び出される。
   constructor(
     private dispatcher$: Dispatcher<Action>,
-    private container: Container,
-    private cd: ChangeDetectorRef
+    private container: Container
   ) {
     super(COMPONENT_SELECTOR);
   }
   ngOnInit() {
     super.ngOnInit();
-    this.subscribeStateDocuments();
-    this.subscribeStateTotalItems();
+    this.subscribeState();
     this.loadJsonGraph();
     document.getElementById('condition').focus();
   }
@@ -133,7 +121,7 @@ export class AppPage4 extends AppPageParent implements OnInit {
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        // this.nowByObservable = lodash.now();
+        // this.nowByPush = lodash.now();
         this.dispatcher$.next(new NextNow(lodash.now()));
       });
   }
@@ -149,6 +137,9 @@ export class AppPage4 extends AppPageParent implements OnInit {
 
   // ここからFalcorのコード。
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  loadJsonGraph() {
+    this.getJsonGraph(this.condition, this.searchWord, (this.currentPageByObservable - 1) * this.itemsPerPage, this.itemsPerPage);
+  }
   getJsonGraph(condition: string, keyword: string, from: number = 0, length: number = 10) {
     const queryName = 'query4';
     const queryJson = serializeQueryObjectForFalcor<QueryParamsForQuery4>({
@@ -178,9 +169,6 @@ export class AppPage4 extends AppPageParent implements OnInit {
       [queryName, queryJson],
       [queryName, queryJson, from, 'totalItems']
     ));
-  }
-  loadJsonGraph() {
-    this.getJsonGraph(this.condition, this.searchWord, (this.currentPageByObservable - 1) * this.itemsPerPage, this.itemsPerPage);
   }
 
   // ここからモーダルウインドウのテキスト。

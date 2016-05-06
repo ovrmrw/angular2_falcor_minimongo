@@ -26,7 +26,7 @@ const COMPONENT_SELECTOR = 'my-page1'
     </div>
     <div class="row">
       <div class="col s12">
-        <h3>{{messageByPush | async}}</h3>
+        <h3>{{(stateByPush | async | async)?.message}}</h3>
       </div>
     </div>
     <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
@@ -35,20 +35,17 @@ const COMPONENT_SELECTOR = 'my-page1'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppPage1 extends AppPageParent implements OnInit {
-  // nowByObservable: number; // Observableイベントハンドラによって値が代入される。
-  // messageByFalcor: string; // loadJsonGraph()のクエリ結果を格納する。
+  // nowByPush: number; // Observableイベントハンドラによって値が代入される。
   get nowByPush() {
-    return this.container.state$.map(state => {
-      return state.now;
+    // 戻り値がObservable<any>なのでtemplateでasyncパイプを1回通すこと。
+    return this.container.state$.map(appState => {
+      return appState.now;
     });
   }
-  private messageByPush: Promise<string>;
-  subscribeStateMessage() {
-    // 戻り値がObservable<Promise<State>>なのでsubscribeしてPromise<State>からPromise<string>に変換する必要がある。
-    this.container.state$.map(appState => {
+  get stateByPush() {
+    // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
+    return this.container.state$.map(appState => {
       return appState.page1;
-    }).subscribe(page1 => {
-      this.messageByPush = new Promise(resolve => page1.then(s => resolve(s.message)));      
     });
   }
 
@@ -61,7 +58,6 @@ export class AppPage1 extends AppPageParent implements OnInit {
   }
   ngOnInit() {
     super.ngOnInit();
-    this.subscribeStateMessage();
     this.loadJsonGraph();
   }
 
@@ -79,13 +75,16 @@ export class AppPage1 extends AppPageParent implements OnInit {
 
     this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
-        // this.nowByObservable = lodash.now();
+        // this.nowByPush = lodash.now();
         this.dispatcher$.next(new NextNow(lodash.now()));
       });
   }
 
   // ここからFalcorのコード。
   //model = new falcor.Model({ source: new falcor.HttpDataSource('/model.json') });
+  loadJsonGraph() {
+    this.getJsonGraph();
+  }
   getJsonGraph() {
     const queryName = 'query1';
 
@@ -96,9 +95,6 @@ export class AppPage1 extends AppPageParent implements OnInit {
     //     this.messageByFalcor = getValueFromJsonGraph(jsonGraph, ['json', queryName], '?????');
     //   });
     this.dispatcher$.next(new NextMessageFromFalcorPage1([queryName]));
-  }
-  loadJsonGraph() {
-    this.getJsonGraph();
   }
 
   // ここからモーダルウインドウのテキスト
