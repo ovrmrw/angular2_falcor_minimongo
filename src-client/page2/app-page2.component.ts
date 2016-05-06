@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {AppPageParent} from '../app/app-page-parent';
 import {AppModal} from '../app/app-modal.component';
 import {getValueFromJsonGraph} from '../app/falcor-utils';
+import {DetectChangesPipe} from '../app/detectChanges.pipe';
 import lodash from 'lodash';
 // import falcor from 'falcor'; // const falcor = require('falcor');
 declare var jQuery: JQueryStatic; // HTMLファイルでロード済み
@@ -28,14 +29,15 @@ const COMPONENT_SELECTOR = 'my-page2'
       </div>
     </div>
     <div class="row">
-      <div class="col s12">
-        <!-- <h3>{{messageByPush}}</h3> -->
+      <div class="col s12">        
+        <!-- <h3>{{(stateByPush | async | async | detectChanges)?.message}}</h3> -->
         <h3>{{messageByPush}}</h3>
       </div>
     </div>
     <my-modal [texts]="modalTexts" [now]="nowByPush | async"></my-modal>
   `,
   directives: [AppModal],
+  pipes: [DetectChangesPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppPage2 extends AppPageParent implements OnInit {
@@ -54,10 +56,6 @@ export class AppPage2 extends AppPageParent implements OnInit {
   // get stateByPush() {
   //   // 戻り値がObservable<Promise<any>>なのでtemplateでasyncパイプを2回通すこと。
   //   return this.container.state$.map(appState => {
-  //     setTimeout(() => {
-  //       if (appState.page2 instanceof Promise)
-  //         this.cd.detectChanges();
-  //     }, 100);
   //     return appState.page2;
   //   });
   // }

@@ -121,7 +121,7 @@ export class AppPage3 extends AppPageParent implements OnInit {
         Materialize.toast(`You clicked "${text}"`, 300);
       });
 
-    this.disposableSubscription = Observable.timer(1, 1000) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
+    this.disposableSubscription = Observable.timer(1, 1000 * 60) // 開始1ms後にスタートして、その後1000ms毎にストリームを発行する。
       .subscribe(() => {
         // this.nowByObservable = lodash.now();
         this.dispatcher$.next(new NextNow(lodash.now()));
